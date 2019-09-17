@@ -1,0 +1,34 @@
+
+Testing
+ - better max finding (ok)
+ 
+Training
+ - train and evaluate models on DTU-3D
+ - train and evaluate models on BU-3DFE
+ - Prøv : torch.backends.cudnn.benchmark = True
+ 
+Code
+ - download models automatically
+ - predict on one file
+ - predict on list of files
+ - predict all files in directory
+ - examples: 3D estimation og VTK plot på Rasmus
+
+GitHub
+ - determine license (BSD-2 Clause / MIT license)
+ - put file description in header (Kristine credits) (http://web.archive.org/web/20111010053227/http://jaynes.colorado.edu/PythonGuidelines.html#module_formatting)
+ - upload clean code
+ - upload example data
+ - upload BU-3DFE landmark sets
+ - write description and instructions
+ - citation
+ 
+Anaconda cloud
+ - check https://github.com/1adrianb/face-alignment
+ 
+Arxiv
+ - upload paper and description
+ - citation
+ 
+Conda
+ - find out how to put code online
