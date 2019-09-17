@@ -5,6 +5,7 @@ from tqdm import tqdm
 from vtk.util.numpy_support import vtk_to_numpy
 import os
 
+
 def no_transform():
     rx = 0
     ry = 0
@@ -100,10 +101,10 @@ class Render3D:
 
         actor_geometry = vtk.vtkActor()
         actor_geometry.SetMapper(mappers)
-        #actor_geometry.GetProperty().SetColor(1,1,1)
-        #actor_geometry.GetProperty().SetAmbient(1.0)
-        #actor_geometry.GetProperty().SetSpecular(0)
-        #actor_geometry.GetProperty().SetDiffuse(0)
+        # actor_geometry.GetProperty().SetColor(1,1,1)
+        # actor_geometry.GetProperty().SetAmbient(1.0)
+        # actor_geometry.GetProperty().SetSpecular(0)
+        # actor_geometry.GetProperty().SetDiffuse(0)
 
         # ren.AddActor(actorText)
         ren.AddActor(actor_geometry)
@@ -145,7 +146,7 @@ class Render3D:
             ymax = 150
             zmin = trans.GetOutput().GetBounds()[4]
             zmax = trans.GetOutput().GetBounds()[5]
-            slack = (zmax - zmin) / 2 #  TODO a clipping plane hack to ensure that view frustrum is big enough
+            slack = (zmax - zmin) / 2  # TODO a clipping plane hack to ensure that view frustrum is big enough
             #        xmin = trans.GetOutput().GetBounds()[0]
             #        xmax= trans.GetOutput().GetBounds()[1]
             #        ymin = trans.GetOutput().GetBounds()[2]
@@ -242,8 +243,152 @@ class Render3D:
 
         return image_stack
 
-    def render_3d_obj_rgb(self, file_name):
+    # Generate nview 3D transformations and return them as a stack
+    def generate_3d_transformations(self):
+        n_views = self.config['data_loader']['args']['n_views']
+        transform_stack = np.zeros((n_views, 6), dtype=np.float32)
+
+        for idx in range(n_views):
+            rx, ry, rz, s, tx, ty = self.random_transform()
+            transform_stack[idx, :] = (rx, ry, rz, s, tx, ty)
+
+        return transform_stack
+
+    def render_3d_obj_depth(self, transform_stack, file_name):
         slack = 5
+        write_image_files = self.config['process_3d']['write_renderings']
+        off_screen_rendering = self.config['process_3d']['off_screen_rendering']
+        n_views = self.config['data_loader']['args']['n_views']
+        img_size = self.config['data_loader']['args']['image_size']
+        win_size = img_size
+        # n_views = 1  # TODO debug
+
+        n_channels = 1  # for depth rendering
+        image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
+
+        obj_in = vtk.vtkOBJReader()
+        obj_in.SetFileName(file_name)
+        obj_in.Update()
+
+        # Initialize Camera
+        ren = vtk.vtkRenderer()
+        ren.SetBackground(1, 1, 1)
+        ren.GetActiveCamera().SetPosition(0, 0, 1)
+        ren.GetActiveCamera().SetFocalPoint(0, 0, 0)
+        ren.GetActiveCamera().SetViewUp(0, 1, 0)
+        ren.GetActiveCamera().SetParallelProjection(1)
+
+        # Initialize RenderWindow
+        ren_win = vtk.vtkRenderWindow()
+        ren_win.AddRenderer(ren)
+        ren_win.SetSize(win_size, win_size)
+        ren_win.SetOffScreenRendering(off_screen_rendering)
+
+        # Initialize Transform
+        t = vtk.vtkTransform()
+        t.Identity()
+        t.Update()
+
+        # Transform (assuming only one mesh)
+        trans = vtk.vtkTransformPolyDataFilter()
+        trans.SetInputConnection(obj_in.GetOutputPort())
+        trans.SetTransform(t)
+        trans.Update()
+
+        mapper = vtk.vtkPolyDataMapper()
+        mapper.SetInputData(trans.GetOutput())
+
+        actor_geometry = vtk.vtkActor()
+        actor_geometry.SetMapper(mapper)
+        ren.AddActor(actor_geometry)
+
+        w2if = vtk.vtkWindowToImageFilter()
+        w2if.SetInputBufferTypeToZBuffer()
+        w2if.SetInput(ren_win)
+
+        scale = vtk.vtkImageShiftScale()
+        scale.SetOutputScalarTypeToUnsignedChar()
+        scale.SetInputConnection(w2if.GetOutputPort())
+        scale.SetShift(0)
+        scale.SetScale(-255)
+
+        writer_png = vtk.vtkPNGWriter()
+        writer_png.SetInputConnection(scale.GetOutputPort())
+
+        start = time.time()
+        for idx in tqdm(range(n_views)):
+            name_rendering = self.config.temp_dir / ('rendering' + str(idx) + '_depth.png')
+
+            rx, ry, rz, s, tx, ty = transform_stack[idx]
+            # rx,ry,rz,s,tx,ty = no_transform() #  debug
+            # rx = -20
+            # ry = 40
+            # rz = 10
+
+            t.Identity()
+            t.RotateY(ry)
+            t.RotateX(rx)
+            t.RotateZ(rz)
+            t.Update()
+
+            trans.Update()
+            xmin = -150
+            xmax = 150
+            ymin = -150
+            ymax = 150
+            zmin = trans.GetOutput().GetBounds()[4]
+            zmax = trans.GetOutput().GetBounds()[5]
+            xlen = xmax - xmin
+            ylen = ymax - ymin
+
+            cx = 0
+            cy = 0
+            extend_factor = 1.0
+            # The side length of the view frustrum which is rectangular since we use a parallel projection
+            side_length = max([xlen, ylen]) * extend_factor
+            # zoom_factor = win_size / side_length
+
+            ren.GetActiveCamera().SetParallelScale(side_length / 2)
+            ren.GetActiveCamera().SetPosition(cx, cy, 500)
+            ren.GetActiveCamera().SetFocalPoint(cx, cy, 0)
+            ren.GetActiveCamera().SetViewUp(0, 1, 0)
+            # Clipping range is really important for depth rendering. Set tight around object.
+            ren.GetActiveCamera().SetClippingRange(500 - zmax - slack, 500 - zmin + slack)
+
+            ren_win.Render()
+
+            if write_image_files:
+                w2if.Modified()  # Needed here else only first rendering is put to file
+                writer_png.SetFileName(str(name_rendering))
+                writer_png.Write()
+            else:
+                w2if.Modified()  # Needed here else only first rendering is put to file
+                w2if.Update()
+
+            # add rendering to image stack
+            im = w2if.GetOutput()
+            rows, cols, _ = im.GetDimensions()
+            sc = im.GetPointData().GetScalars()
+            a = vtk_to_numpy(sc)
+            components = sc.GetNumberOfComponents()
+            a = a.reshape(rows, cols, components)
+            a = np.flipud(a)
+
+            # For now just take the first channel
+            image_stack[idx, :, :, 0] = a[:, :, 0]
+
+        end = time.time()
+        print("Pure depth rendering time: " + str(end - start))
+
+        del obj_in
+        del scale
+        del writer_png, w2if
+        del trans, mapper, actor_geometry, ren, ren_win, t
+
+        return image_stack
+
+    def render_3d_obj_rgb(self, file_name):
+        # slack = 5
 
         write_transform_files = False
         write_image_files = self.config['process_3d']['write_renderings']
@@ -257,7 +402,7 @@ class Render3D:
         transform_stack = np.zeros((n_views, 6), dtype=np.float32)
 
         mtl_name = os.path.splitext(file_name)[0]+'.mtl'
-        obj_dir  = os.path.dirname(file_name)
+        obj_dir = os.path.dirname(file_name)
         obj_in = vtk.vtkOBJImporter()
         obj_in.SetFileName(file_name)
         obj_in.SetFileNameMTL(mtl_name)
@@ -488,6 +633,9 @@ class Render3D:
         transformation_stack = None
         if file_type == ".obj" and image_channels == "RGB":
             image_stack, transformation_stack = self.render_3d_obj_rgb(file_name)
+        elif file_type == ".obj" and image_channels == "depth":
+            transformation_stack = self.generate_3d_transformations()
+            image_stack = self.render_3d_obj_depth(transformation_stack, file_name)
         else:
             print("Can not render filetype ", file_type, " using image_channels ", image_channels)
 

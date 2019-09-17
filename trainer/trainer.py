@@ -100,7 +100,7 @@ class Trainer(BaseTrainer):
             'loss': total_loss / self.len_epoch,
             # 'metrics': (total_metrics / self.len_epoch).tolist()
         }
-
+        print('Doing validation')
         if self.do_validation:
             val_log = self._valid_epoch(epoch)
             log.update(val_log)
