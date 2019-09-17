@@ -19,11 +19,11 @@ If you use Deep-MVLM in your research, please cite the
 ## How to use Deep-MVLM
 ### Rendering types
 The type of 3D rendering used is specified in the **image_channels** setting. The options are:
--**geometry** pure geometry rendering without texture (1 image channel)
--**depth** depth rendering (the z-buffer) similar to range scanners like the Kinect (1 image channel)
--**RGB** texture rendering (3 image channels)
--**RGB+depth** texture plus depth rendering (3+1=4 image channels)
--**geometry+depth** geometry plus depth rendering (1+1=2 image channels)
+- **geometry** pure geometry rendering without texture (1 image channel)
+- **depth** depth rendering (the z-buffer) similar to range scanners like the Kinect (1 image channel)
+- **RGB** texture rendering (3 image channels)
+- **RGB+depth** texture plus depth rendering (3+1=4 image channels)
+- **geometry+depth** geometry plus depth rendering (1+1=2 image channels)
 
 ## Team
 Rasmus R. Paulsen and Kristine Aavild Juhl
