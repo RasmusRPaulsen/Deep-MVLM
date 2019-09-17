@@ -165,7 +165,8 @@ class Predict2D:
             # data = torch.from_numpy(image_stack)
             data = data.permute(0, 3, 1, 2)  # from NHWC to NCHW
 
-            data = data / 255
+            # TODO: Should be done at load time - due to different scaling of channels
+            # data = data / 255
 
             with torch.no_grad():
                 print('predicting heatmaps for batch ', cur_id, ' to ', cur_id + batch_size)

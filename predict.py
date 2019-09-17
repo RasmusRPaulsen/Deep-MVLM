@@ -20,14 +20,19 @@ def get_device_and_load_model(config):
 
     print('Initialising model')
     model = config.initialize('arch', module_arch)
-    logger.info(model)
+    # logger.info(model)
 
     print('Loading checkpoint')
     image_channels = config['data_loader']['args']['image_channels']
     if image_channels == "geometry":
         check_point_name = 'saved/trained/MVLMModel_DTU3D_geometry.pth'
+    # elif image_channels == "depth":
+    #   check_point_name = 'saved/trained/MVLMModel_DTU3D_geometry.pth'
     elif image_channels == "RGB":
         check_point_name = 'saved/trained/MVLMModel_DTU3D_RGB_07092019.pth'
+    else:
+        print("Could not load model with image_channels=", image_channels)
+        return None, None
     logger.info('Loading checkpoint: {}'.format(check_point_name))
 
     device = get_working_device(config)
@@ -69,13 +74,13 @@ def predict_one_subject(config, file_name):
 
 def main(config):
     # subject_name = 'I:/Data/temp/MartinStandard.obj'
-    # subject_name = 'D:/Data/temp/MartinStandard.obj'
+    file_name = 'D:/Data/temp/MartinStandard.obj'
     # subject_name = 'D:/Data/temp/20130218092022_standard.obj'
     # subject_name = 'D:/Data/temp/20140508111926_standard.obj'
     # file_name = 'D:/Data/temp/20130715150920_standard.obj'
     # file_name = 'D:/Data/temp/20121105144354_standard.obj'
     # file_name = 'I:/Data/temp/V00171112671006_08-07-2011_ghjghj.obj' # Check right eye
-    file_name = 'I:/Data/temp/V00171112599106_17-06-2011_elleve.obj'  # beard causing problem for LM 66 (65 with o index)
+    # file_name = 'I:/Data/temp/V00171112599106_17-06-2011_elleve.obj'  # beard causing problem for LM 66 (65 with o index)
     predict_one_subject(config, file_name)
 
 
@@ -89,5 +94,5 @@ if __name__ == '__main__':
     args.add_argument('-d', '--device', default=None, type=str,
                       help='indices of GPUs to enable (default: all)')
 
-    config = ConfigParser(args)
-    main(config)
+    global_config = ConfigParser(args)
+    main(global_config)

@@ -260,6 +260,132 @@ class Render3D:
     #    f.write(line)
     #    f.close()
 
+    def render_3d_obj_geometry(self, transform_stack, file_name):
+        slack = 5
+        write_image_files = self.config['process_3d']['write_renderings']
+        off_screen_rendering = self.config['process_3d']['off_screen_rendering']
+        n_views = self.config['data_loader']['args']['n_views']
+        img_size = self.config['data_loader']['args']['image_size']
+        win_size = img_size
+        # n_views = 1  # TODO debug
+
+        n_channels = 1  # for geometry rendering
+        image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
+
+        obj_in = vtk.vtkOBJReader()
+        obj_in.SetFileName(file_name)
+        obj_in.Update()
+
+        # Initialize Camera
+        ren = vtk.vtkRenderer()
+        ren.SetBackground(1, 1, 1)
+        ren.GetActiveCamera().SetPosition(0, 0, 1)
+        ren.GetActiveCamera().SetFocalPoint(0, 0, 0)
+        ren.GetActiveCamera().SetViewUp(0, 1, 0)
+        ren.GetActiveCamera().SetParallelProjection(1)
+
+        # Initialize RenderWindow
+        ren_win = vtk.vtkRenderWindow()
+        ren_win.AddRenderer(ren)
+        ren_win.SetSize(win_size, win_size)
+        ren_win.SetOffScreenRendering(off_screen_rendering)
+
+        # Initialize Transform
+        t = vtk.vtkTransform()
+        t.Identity()
+        t.Update()
+
+        # Transform (assuming only one mesh)
+        trans = vtk.vtkTransformPolyDataFilter()
+        trans.SetInputConnection(obj_in.GetOutputPort())
+        trans.SetTransform(t)
+        trans.Update()
+
+        mapper = vtk.vtkPolyDataMapper()
+        mapper.SetInputData(trans.GetOutput())
+
+        actor_geometry = vtk.vtkActor()
+        actor_geometry.SetMapper(mapper)
+        ren.AddActor(actor_geometry)
+
+        w2if = vtk.vtkWindowToImageFilter()
+        w2if.SetInputBufferTypeToZBuffer()
+        w2if.SetInput(ren_win)
+
+        writer_png = vtk.vtkPNGWriter()
+        writer_png.SetInputConnection(w2if.GetOutputPort())
+
+        start = time.time()
+        for idx in tqdm(range(n_views)):
+            name_rendering = self.config.temp_dir / ('rendering' + str(idx) + '_geometry.png')
+
+            rx, ry, rz, s, tx, ty = transform_stack[idx]
+            # rx,ry,rz,s,tx,ty = no_transform() #  debug
+            # rx = -20
+            # ry = 40
+            # rz = 10
+
+            t.Identity()
+            t.RotateY(ry)
+            t.RotateX(rx)
+            t.RotateZ(rz)
+            t.Update()
+
+            trans.Update()
+            xmin = -150
+            xmax = 150
+            ymin = -150
+            ymax = 150
+            zmin = trans.GetOutput().GetBounds()[4]
+            zmax = trans.GetOutput().GetBounds()[5]
+            xlen = xmax - xmin
+            ylen = ymax - ymin
+
+            cx = 0
+            cy = 0
+            extend_factor = 1.0
+            # The side length of the view frustrum which is rectangular since we use a parallel projection
+            side_length = max([xlen, ylen]) * extend_factor
+            # zoom_factor = win_size / side_length
+
+            ren.GetActiveCamera().SetParallelScale(side_length / 2)
+            ren.GetActiveCamera().SetPosition(cx, cy, 500)
+            ren.GetActiveCamera().SetFocalPoint(cx, cy, 0)
+            ren.GetActiveCamera().SetViewUp(0, 1, 0)
+            # Clipping range is really important for depth rendering. Set tight around object.
+            ren.GetActiveCamera().SetClippingRange(500 - zmax - slack, 500 - zmin + slack)
+
+            ren_win.Render()
+
+            if write_image_files:
+                w2if.Modified()  # Needed here else only first rendering is put to file
+                writer_png.SetFileName(str(name_rendering))
+                writer_png.Write()
+            else:
+                w2if.Modified()  # Needed here else only first rendering is put to file
+                w2if.Update()
+
+            # add rendering to image stack
+            im = w2if.GetOutput()
+            rows, cols, _ = im.GetDimensions()
+            sc = im.GetPointData().GetScalars()
+            a = vtk_to_numpy(sc)
+            components = sc.GetNumberOfComponents()
+            a = a.reshape(rows, cols, components)
+            a = np.flipud(a)
+
+            # For now just take the first channel
+            image_stack[idx, :, :, 0] = a[:, :, 0]
+
+        end = time.time()
+        print("Pure depth rendering time: " + str(end - start))
+
+        del obj_in
+        del writer_png, w2if
+        del trans, mapper, actor_geometry, ren, ren_win, t
+
+        return image_stack
+
     def render_3d_obj_depth(self, transform_stack, file_name):
         slack = 5
         write_image_files = self.config['process_3d']['write_renderings']
@@ -524,9 +650,16 @@ class Render3D:
 
         image_stack = None
         transformation_stack = None
+        n_views = self.config['data_loader']['args']['n_views']
+        win_size = self.config['data_loader']['args']['image_size']
+
         if file_type == ".obj" and image_channels == "RGB":
             transformation_stack = self.generate_3d_transformations()
             image_stack = self.render_3d_obj_rgb(transformation_stack, file_name)
+            image_stack = image_stack / 255
+        elif file_type == ".obj" and image_channels == "geometry":
+            transformation_stack = self.generate_3d_transformations()
+            image_stack = self.render_3d_obj_geometry(transformation_stack, file_name)
         elif file_type == ".obj" and image_channels == "depth":
             transformation_stack = self.generate_3d_transformations()
             image_stack = self.render_3d_obj_depth(transformation_stack, file_name)
@@ -534,6 +667,18 @@ class Render3D:
             transformation_stack = self.generate_3d_transformations()
             image_stack_rgb = self.render_3d_obj_rgb(transformation_stack, file_name)
             image_stack_depth = self.render_3d_obj_depth(transformation_stack, file_name)
+            n_channels = 4
+            image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
+            image_stack[:, :, :, 0:3] = image_stack_rgb / 255
+            image_stack[:, :, :, 3:4] = image_stack_depth
+        elif file_type == ".obj" and image_channels == "geometry+depth":
+            transformation_stack = self.generate_3d_transformations()
+            image_stack_geometry = self.render_3d_obj_geometry(transformation_stack, file_name)
+            image_stack_depth = self.render_3d_obj_depth(transformation_stack, file_name)
+            n_channels = 2
+            image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
+            image_stack[:, :, :, 0:1] = image_stack_geometry
+            image_stack[:, :, :, 1:2] = image_stack_depth
         else:
             print("Can not render filetype ", file_type, " using image_channels ", image_channels)
 
