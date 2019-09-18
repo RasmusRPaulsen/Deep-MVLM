@@ -49,6 +49,48 @@ class DTU3DFaceDataset(Dataset):
                 augment_name = clean_name + '_' + str(n)
                 self.id_table.append(augment_name)
         print('Generated ', len(self.id_table), ' file ids including augmentations')
+        self._check_image_files()
+
+    def _check_if_valid_file(self, file_name):
+        if not os.path.isfile(file_name):
+            print(file_name, " is not a file!")
+            return False
+        elif os.stat(file_name).st_size < 10:
+            print(file_name, " is not valid (length less than 10 bytes)")
+            return False
+        return True
+
+    def _check_image_files(self):
+        rendering_type = self.image_channels
+        print('Checking if all files are there')
+        new_id_table = []
+        for file_name in self.id_table:
+            if rendering_type == 'geometry':
+                image_file = os.path.join(self.root_dir, 'images', file_name + '_geometry.png')
+                if self._check_if_valid_file(image_file):
+                    new_id_table.append(file_name)
+            elif rendering_type == 'depth':
+                image_file = os.path.join(self.root_dir, 'images', file_name + '_zbuffer.png')
+                if self._check_if_valid_file(image_file):
+                    new_id_table.append(file_name)
+            elif rendering_type == 'RGB':
+                image_file = os.path.join(self.root_dir, 'images', file_name + '.png')
+                if self._check_if_valid_file(image_file):
+                    new_id_table.append(file_name)
+            elif rendering_type == 'RGB+depth':
+                image_file = os.path.join(self.root_dir, 'images', file_name + '.png')
+                image_file2 = os.path.join(self.root_dir, 'images', file_name + '_zbuffer.png')
+                if self._check_if_valid_file(image_file) and self._check_if_valid_file(image_file2):
+                    new_id_table.append(file_name)
+            elif rendering_type == 'geometry+depth':
+                image_file = os.path.join(self.root_dir, 'images', file_name + '_geometry.png')
+                image_file2 = os.path.join(self.root_dir, 'images', file_name + '_zbuffer.png')
+                if self._check_if_valid_file(image_file) and self._check_if_valid_file(image_file2):
+                    new_id_table.append(file_name)
+
+        print('Checking done')
+        self.id_table = new_id_table
+        print('Final ', len(self.id_table), ' file ids including augmentations')
 
     def _make_gaussian(self, height, width, sigma=3, center=None):
         """
@@ -111,7 +153,7 @@ class DTU3DFaceDataset(Dataset):
         # Expand the heatmap so there are one for each stack in the network
         # the copies of the heat map is used to make the target data compatible with the network output
         # where there is a heatmap generated after each stack
-        # TODO: number of stacks should be in configuration file
+        # In this implementation we are limited to two stacks
         n_stacks = 2
         heat_map = np.expand_dims(heat_map, axis=0)
         heat_map = np.repeat(heat_map, n_stacks, axis=0)
@@ -125,7 +167,7 @@ class DTU3DFaceDataset(Dataset):
             image = np.zeros((img_size, img_size, 1), dtype=np.float32)
             image_file = os.path.join(self.root_dir, 'images', file_name + '_geometry.png')
             img_in = transform.resize(imageio.imread(image_file), (img_size, img_size), mode='constant')
-            image[:, :, 0] = img_in[:, :, 0]  # depth image is stored as a 3-channel image
+            image[:, :, 0] = img_in[:, :, 0]  # geometry image is stored as a 3-channel image
         elif rendering_type == 'depth':
             image = np.zeros((img_size, img_size, 1), dtype=np.float32)
             image_file = os.path.join(self.root_dir, 'images', file_name + '_zbuffer.png')
@@ -136,6 +178,22 @@ class DTU3DFaceDataset(Dataset):
             image_file = os.path.join(self.root_dir, 'images', file_name + '.png')
             img_in = transform.resize(imageio.imread(image_file), (img_size, img_size), mode='constant')
             image[:, :, :] = img_in[:, :, :]
+        elif rendering_type == 'RGB+depth':
+            image = np.zeros((img_size, img_size, 4), dtype=np.float32)
+            image_file = os.path.join(self.root_dir, 'images', file_name + '.png')
+            img_in = transform.resize(imageio.imread(image_file), (img_size, img_size), mode='constant')
+            image[:, :, 0:3] = img_in[:, :, :]
+            image_file = os.path.join(self.root_dir, 'images', file_name + '_zbuffer.png')
+            img_in = transform.resize(imageio.imread(image_file), (img_size, img_size), mode='constant')
+            image[:, :, 3] = img_in[:, :]  # depth image is a pure grey level image
+        elif rendering_type == 'geometry+depth':
+            image = np.zeros((img_size, img_size, 2), dtype=np.float32)
+            image_file = os.path.join(self.root_dir, 'images', file_name + '_geometry.png')
+            img_in = transform.resize(imageio.imread(image_file), (img_size, img_size), mode='constant')
+            image[:, :, 0] = img_in[:, :, 0]  # geometry image is stored as a 3-channel image
+            image_file = os.path.join(self.root_dir, 'images', file_name + '_zbuffer.png')
+            img_in = transform.resize(imageio.imread(image_file), (img_size, img_size), mode='constant')
+            image[:, :, 1] = img_in[:, :]  # depth image is a pure grey level image
         else:
             print('Rendering type ', rendering_type, ' not supported')
             image = None

@@ -103,7 +103,7 @@ def get_cuda_info():
 
 
 def main(config):
-    logger = config.get_logger('train')
+    # logger = config.get_logger('train')
 
     # setup data_loader instances
     data_loader = config.initialize('data_loader', module_data)
