@@ -529,7 +529,7 @@ class Render3D:
         n_channels = 3
         image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
 
-        mtl_name = os.path.splitext(file_name)[0]+'.mtl'
+        mtl_name = os.path.splitext(file_name)[0] + '.mtl'
         obj_dir = os.path.dirname(file_name)
         obj_in = vtk.vtkOBJImporter()
         obj_in.SetFileName(file_name)

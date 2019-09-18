@@ -171,8 +171,9 @@ class DTU3DFaceDataset(Dataset):
         elif rendering_type == 'depth':
             image = np.zeros((img_size, img_size, 1), dtype=np.float32)
             image_file = os.path.join(self.root_dir, 'images', file_name + '_zbuffer.png')
-            img_in = transform.resize(imageio.imread(image_file), (img_size, img_size), mode='constant')
-            image[:, :, 0] = img_in[:, :]  # depth image is a pure grey level image
+            if self._check_if_valid_file(image_file):  # TODO extend this check to other types
+                img_in = transform.resize(imageio.imread(image_file), (img_size, img_size), mode='constant')
+                image[:, :, 0] = img_in[:, :]  # depth image is a pure grey level image
         elif rendering_type == 'RGB':
             image = np.zeros((img_size, img_size, 3), dtype=np.float32)
             image_file = os.path.join(self.root_dir, 'images', file_name + '.png')

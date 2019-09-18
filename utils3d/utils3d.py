@@ -237,9 +237,9 @@ class Utils3D:
             # Compute first estimate of intersection
             p_est = self.compute_intersection_between_lines(pa[ran_lines, :], pb[ran_lines, :])
             # Compute distance from all lines to intersection
-            top = np.cross((np.transpose(p_est)-pa), (np.transpose(p_est)-pb))
-            bottom = pb-pa
-            distances = (np.linalg.norm(top, axis=1)/np.linalg.norm(bottom, axis=1))**2
+            top = np.cross((np.transpose(p_est) - pa), (np.transpose(p_est) - pb))
+            bottom = pb - pa
+            distances = (np.linalg.norm(top, axis=1) / np.linalg.norm(bottom, axis=1))**2
             # number of inliners
             n_inliners = np.sum(distances < dist_thres)
             if n_inliners > d:
@@ -248,9 +248,9 @@ class Utils3D:
                 p_est = self.compute_intersection_between_lines(pa[idx, :], pb[idx, :])
 
                 # Compute distance from all inliners to intersection
-                top = np.cross((np.transpose(p_est)-pa[idx, :]), (np.transpose(p_est)-pb[idx, :]))
+                top = np.cross((np.transpose(p_est) - pa[idx, :]), (np.transpose(p_est) - pb[idx, :]))
                 bottom = pb[idx, :] - pa[idx, :]
-                distances = (np.linalg.norm(top, axis=1)/np.linalg.norm(bottom, axis=1))**2
+                distances = (np.linalg.norm(top, axis=1) / np.linalg.norm(bottom, axis=1))**2
 
                 # sum_squared = np.sum(np.square(distances)) / n_inliners
                 sum_squared = np.sum(distances) / n_inliners
@@ -266,7 +266,6 @@ class Utils3D:
             print('Ransac error ', best_error, ' with ', used_lines, ' lines')
 
         return best_p
-
 
     # return the lines that correspond to a high valued maxima in the heatmap
     def filter_lines_based_on_heatmap_value_using_quantiles(self, lm_no, pa, pb):

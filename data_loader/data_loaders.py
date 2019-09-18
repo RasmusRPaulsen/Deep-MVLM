@@ -31,5 +31,5 @@ class DTU3DDataLoader(BaseDataLoader):
         self.csv_file_name = os.path.join(self.data_dir, 'face_dataset_full.txt')
         self.dataset = DTU3DFaceDataset(csv_file=self.csv_file_name, root_dir=data_dir,
                                         heatmap_size=heatmap_size, image_size=image_size,
-                                        image_channels = image_channels, n_views=n_views)
+                                        image_channels=image_channels, n_views=n_views)
         super().__init__(self.dataset, batch_size, shuffle, validation_split, num_workers)

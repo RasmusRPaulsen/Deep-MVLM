@@ -80,7 +80,8 @@ def main(config):
     # file_name = 'D:/Data/temp/20130715150920_standard.obj'
     # file_name = 'D:/Data/temp/20121105144354_standard.obj'
     # file_name = 'I:/Data/temp/V00171112671006_08-07-2011_ghjghj.obj' # Check right eye
-    # file_name = 'I:/Data/temp/V00171112599106_17-06-2011_elleve.obj'  # beard causing problem for LM 66 (65 with o index)
+    # beard causing problem for LM 66 (65 with o index)
+    # file_name = 'I:/Data/temp/V00171112599106_17-06-2011_elleve.obj'
     predict_one_subject(config, file_name)
 
 

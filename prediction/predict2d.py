@@ -28,8 +28,8 @@ class Predict2D:
                 highest_idx = np.unravel_index(np.argmax(hm), (hm_size, hm_size))
                 px = highest_idx[0]
                 py = highest_idx[1]
-                value = hm[px, py] # TODO check if values is equal to np.max(hm)
-                coordinates[k, :] = (px-1, py-0.5, value)  # TODO find out why it works with the subtractions
+                value = hm[px, py]  # TODO check if values is equal to np.max(hm)
+                coordinates[k, :] = (px - 1, py - 0.5, value)  # TODO find out why it works with the subtractions
 
         if method == "moment":
             for k in range(out_dim):
@@ -63,10 +63,11 @@ class Predict2D:
         return coordinates
 
     def find_maxima_in_batch_of_heatmaps(self, heatmaps, cur_id, heatmap_maxima):
-        write_heatmaps = False;
+        write_heatmaps = False
         heatmaps = heatmaps.numpy()
         batch_size = heatmaps.shape[0]
 
+        f = None
         for idx in range(batch_size):
             if write_heatmaps:
                 name_hm_maxima = self.config.temp_dir / ('hm_maxima' + str(cur_id + idx) + '.txt')
@@ -129,9 +130,9 @@ class Predict2D:
             g = random.random()
             b = random.random()
             length = math.sqrt(r * r + g * g + b * b)
-            r = r / length;
-            g = g / length;
-            b = b / length;
+            r = r / length
+            g = g / length
+            b = b / length
             hm[:, :, 0] = hm[:, :, 0] + heat_map[lm, :, :] * r
             hm[:, :, 1] = hm[:, :, 1] + heat_map[lm, :, :] * g
             hm[:, :, 2] = hm[:, :, 2] + heat_map[lm, :, :] * b
