@@ -1,3 +1,5 @@
+import sys
+
 import imageio as imageio
 from torch.utils.data import Dataset
 # import pandas as pd
@@ -172,8 +174,18 @@ class DTU3DFaceDataset(Dataset):
             image = np.zeros((img_size, img_size, 1), dtype=np.float32)
             image_file = os.path.join(self.root_dir, 'images', file_name + '_zbuffer.png')
             if self._check_if_valid_file(image_file):  # TODO extend this check to other types
-                img_in = transform.resize(imageio.imread(image_file), (img_size, img_size), mode='constant')
-                image[:, :, 0] = img_in[:, :]  # depth image is a pure grey level image
+                try:
+                    img_in = transform.resize(imageio.imread(image_file), (img_size, img_size), mode='constant')
+                    image[:, :, 0] = img_in[:, :]  # depth image is a pure grey level image
+                except IOError as e:
+                    print("File ", image_file, " raises exception")
+                    print("I/O error({0}): {1}".format(e.errno, e.strerror))
+                except ValueError:
+                    print("File ", image_file, " raises exception")
+                    print("ValueError")
+                except:
+                    print("File ", image_file, " raises exception")
+                    print("Unexpected error:", sys.exc_info()[0])
         elif rendering_type == 'RGB':
             image = np.zeros((img_size, img_size, 3), dtype=np.float32)
             image_file = os.path.join(self.root_dir, 'images', file_name + '.png')
