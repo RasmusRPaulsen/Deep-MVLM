@@ -61,10 +61,17 @@
         "heatmap_max_quantile": 0.5,
         "heatmap_abs_threshold": 0.5,
         "write_renderings": true,
-        "off_screen_rendering": true
+        "off_screen_rendering": true,
+        "min_x_angle": -90,
+        "max_x_angle": 20,
+        "min_y_angle": -60,
+        "max_y_angle": 60,
+        "min_z_angle": -60,
+        "max_z_angle": 60
     },
     "preparedata": {
         "raw_data_dir": "F:/DataNoBackup/BU_3DFE/",
-        "processed_data_dir": "F:/DataNoBackup/BU_3DFE_processed/"
+        "processed_data_dir": "F:/DataNoBackup/BU_3DFE_processed/",
+        "off_screen_rendering": false
     }
 }
