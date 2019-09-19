@@ -1,8 +1,5 @@
-import sys
-
 import imageio as imageio
 from torch.utils.data import Dataset
-# import pandas as pd
 import os
 import numpy as np
 from skimage import transform
@@ -130,12 +127,77 @@ class DTU3DFaceDataset(Dataset):
                 hm[:, :, i] = np.zeros((height, width))
         return hm
 
+    def _safe_read_and_scale_image(self, image_file, img_size):
+        img_in = None
+        org_size = 1024  # Default value
+        if self._check_if_valid_file(image_file):
+            try:
+                img_t = imageio.imread(image_file)
+                org_size = img_t.shape[0]
+                img_in = transform.resize(img_t, (img_size, img_size), mode='constant')
+            except IOError as e:
+                print("File ", image_file, " raises exception")
+                print("I/O error({0}): {1}".format(e.errno, e.strerror))
+            except ValueError:
+                print("File ", image_file, " raises exception")
+                print("ValueError")
+        return img_in, org_size
+
     def __len__(self):
         return len(self.id_table)
 
     def __getitem__(self, idx):
         # print('Returning item ', idx)
         file_name = self.id_table[idx]
+
+        # Type of rendering: geom, depth, RGB, curvature, geom+depth
+        rendering_type = self.image_channels
+        org_img_size = 1024  # just a default value
+
+        # Size of input image in network
+        img_size = self.image_size
+        if rendering_type == 'geometry':
+            image = np.zeros((img_size, img_size, 1), dtype=np.float32)
+            image_file = os.path.join(self.root_dir, 'images', file_name + '_geometry.png')
+            img_in, org_img_size = self._safe_read_and_scale_image(image_file, img_size)
+            if img_in is not None:
+                image[:, :, 0] = img_in[:, :, 0]  # geometry image is stored as a 3-channel image
+        elif rendering_type == 'depth':
+            image = np.zeros((img_size, img_size, 1), dtype=np.float32)
+            image_file = os.path.join(self.root_dir, 'images', file_name + '_zbuffer.png')
+            img_in, org_img_size = self._safe_read_and_scale_image(image_file, img_size)
+            if img_in is not None:
+                image[:, :, 0] = img_in[:, :]  # depth image is a pure grey level image
+        elif rendering_type == 'RGB':
+            image = np.zeros((img_size, img_size, 3), dtype=np.float32)
+            image_file = os.path.join(self.root_dir, 'images', file_name + '.png')
+            img_in, org_img_size = self._safe_read_and_scale_image(image_file, img_size)
+            if img_in is not None:
+                image[:, :, :] = img_in[:, :, :]
+        elif rendering_type == 'RGB+depth':
+            image = np.zeros((img_size, img_size, 4), dtype=np.float32)
+            image_file = os.path.join(self.root_dir, 'images', file_name + '.png')
+            img_in, org_img_size = self._safe_read_and_scale_image(image_file, img_size)
+            if img_in is not None:
+                image[:, :, 0:3] = img_in[:, :, :]
+            image_file = os.path.join(self.root_dir, 'images', file_name + '_zbuffer.png')
+            img_in, org_img_size = self._safe_read_and_scale_image(image_file, img_size)
+            if img_in is not None:
+                image[:, :, 3] = img_in[:, :]  # depth image is a pure grey level image
+        elif rendering_type == 'geometry+depth':
+            image = np.zeros((img_size, img_size, 2), dtype=np.float32)
+            image_file = os.path.join(self.root_dir, 'images', file_name + '_geometry.png')
+            img_in, org_img_size = self._safe_read_and_scale_image(image_file, img_size)
+            if img_in is not None:
+                image[:, :, 0] = img_in[:, :, 0]  # geometry image is stored as a 3-channel image
+            image_file = os.path.join(self.root_dir, 'images', file_name + '_zbuffer.png')
+            img_in, org_img_size = self._safe_read_and_scale_image(image_file, img_size)
+            if img_in is not None:
+                image[:, :, 1] = img_in[:, :]  # depth image is a pure grey level image
+        else:
+            print('Rendering type ', rendering_type, ' not supported')
+            image = None
+
         lm_name = os.path.join(self.root_dir, '2D LM', file_name + '.txt')
         try:
             input_file = open(lm_name, 'r')
@@ -147,8 +209,6 @@ class DTU3DFaceDataset(Dataset):
 
         # Generate target heat maps
         hm_size = self.heatmap_size
-        # TODO this should be put into a configuration file - when the whole training loop is converted to Python
-        org_img_size = 1024
         scaled_lm = landmarks / org_img_size * hm_size
         heat_map = self._generate_heat_maps(hm_size, hm_size, scaled_lm, hm_size)
 
@@ -159,57 +219,6 @@ class DTU3DFaceDataset(Dataset):
         n_stacks = 2
         heat_map = np.expand_dims(heat_map, axis=0)
         heat_map = np.repeat(heat_map, n_stacks, axis=0)
-
-        # Type of rendering: geom, depth, RGB, curvature, geom+depth
-        rendering_type = self.image_channels
-
-        # Size of input image in network
-        img_size = self.image_size
-        if rendering_type == 'geometry':
-            image = np.zeros((img_size, img_size, 1), dtype=np.float32)
-            image_file = os.path.join(self.root_dir, 'images', file_name + '_geometry.png')
-            img_in = transform.resize(imageio.imread(image_file), (img_size, img_size), mode='constant')
-            image[:, :, 0] = img_in[:, :, 0]  # geometry image is stored as a 3-channel image
-        elif rendering_type == 'depth':
-            image = np.zeros((img_size, img_size, 1), dtype=np.float32)
-            image_file = os.path.join(self.root_dir, 'images', file_name + '_zbuffer.png')
-            if self._check_if_valid_file(image_file):  # TODO extend this check to other types
-                try:
-                    img_in = transform.resize(imageio.imread(image_file), (img_size, img_size), mode='constant')
-                    image[:, :, 0] = img_in[:, :]  # depth image is a pure grey level image
-                except IOError as e:
-                    print("File ", image_file, " raises exception")
-                    print("I/O error({0}): {1}".format(e.errno, e.strerror))
-                except ValueError:
-                    print("File ", image_file, " raises exception")
-                    print("ValueError")
-                except:
-                    print("File ", image_file, " raises exception")
-                    print("Unexpected error:", sys.exc_info()[0])
-        elif rendering_type == 'RGB':
-            image = np.zeros((img_size, img_size, 3), dtype=np.float32)
-            image_file = os.path.join(self.root_dir, 'images', file_name + '.png')
-            img_in = transform.resize(imageio.imread(image_file), (img_size, img_size), mode='constant')
-            image[:, :, :] = img_in[:, :, :]
-        elif rendering_type == 'RGB+depth':
-            image = np.zeros((img_size, img_size, 4), dtype=np.float32)
-            image_file = os.path.join(self.root_dir, 'images', file_name + '.png')
-            img_in = transform.resize(imageio.imread(image_file), (img_size, img_size), mode='constant')
-            image[:, :, 0:3] = img_in[:, :, :]
-            image_file = os.path.join(self.root_dir, 'images', file_name + '_zbuffer.png')
-            img_in = transform.resize(imageio.imread(image_file), (img_size, img_size), mode='constant')
-            image[:, :, 3] = img_in[:, :]  # depth image is a pure grey level image
-        elif rendering_type == 'geometry+depth':
-            image = np.zeros((img_size, img_size, 2), dtype=np.float32)
-            image_file = os.path.join(self.root_dir, 'images', file_name + '_geometry.png')
-            img_in = transform.resize(imageio.imread(image_file), (img_size, img_size), mode='constant')
-            image[:, :, 0] = img_in[:, :, 0]  # geometry image is stored as a 3-channel image
-            image_file = os.path.join(self.root_dir, 'images', file_name + '_zbuffer.png')
-            img_in = transform.resize(imageio.imread(image_file), (img_size, img_size), mode='constant')
-            image[:, :, 1] = img_in[:, :]  # depth image is a pure grey level image
-        else:
-            print('Rendering type ', rendering_type, ' not supported')
-            image = None
 
         sample = {'image': image, 'heat_map_stack': heat_map}
 
