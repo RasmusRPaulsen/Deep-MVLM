@@ -25,6 +25,16 @@ The type of 3D rendering used is specified in the **image_channels** setting. Th
 - **RGB+depth** texture plus depth rendering (3+1=4 image channels)
 - **geometry+depth** geometry plus depth rendering (1+1=2 image channels)
 
+## How to use Deep-MVLM with the BU-3DFE dataset
+
+The Binghamton University 3D Facial Expression Database (BU-3DFE) is a standard database for testing the performance of 3D facial analysis software tools. Here it is described how this database can be used to train and evaluate the performance of Deep-MVLM.
+
+Start by requesting and downloading the database from [the official BU-3DFE site](http://www.cs.binghamton.edu/~lijun/Research/3DFE/3DFE_Analysis.html)
+
+Secondly, download the 3D landmarks for the raw data from [Rasmus R. Paulsens homepage](http://people.compute.dtu.dk/RAPA/BU-3DFE/raw-lms.zip). The landmarks from the original BU-3DFE distribution is fitted to the cropped face data. Unfortunately, the raw and cropped face data are not in alignment. The data fra Rasmus' site has been aligned to the raw data, thus making it possible to train and evaluate on the raw face data.
+
+
+
 ## Team
 Rasmus R. Paulsen and Kristine Aavild Juhl
 
