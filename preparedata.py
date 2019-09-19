@@ -42,7 +42,7 @@ def process_file_bu_3dfe(config, file_name, o_dir):
     base_name = os.path.basename(file_name)
     name_pd = bu_3dfe_dir + file_name + '_RAW.wrl'
     name_bmp = bu_3dfe_dir + file_name + '_F3D.bmp'
-    name_lm =  bu_3dfe_dir + file_name + '_RAW_84_LMS.txt'
+    name_lm = bu_3dfe_dir + file_name + '_RAW_84_LMS.txt'
     lock_file = o_dir + base_name + '.lock'
 
     if not os.path.isfile(name_pd):
@@ -58,11 +58,24 @@ def process_file_bu_3dfe(config, file_name, o_dir):
         print(file_name, ' is locked - skipping')
         return True
     create_lock_file(lock_file)
+    print('Rendering ', file_name)
 
     win_size = config['data_loader']['args']['image_size']
     off_screen_rendering = config['preparedata']['off_screen_rendering']
     n_views = config['data_loader']['args']['n_views']
     slack = 5
+
+    # Load Landmarks
+    points = vtk.vtkPoints()
+    lms = vtk.vtkPolyData()
+
+    with open(name_lm) as f:
+        for line in f:
+            line = line.strip("/n")
+            x, y, z = np.double(line.split(" "))
+            points.InsertNextPoint(x, y, z)
+    lms.SetPoints(points)
+    del points
 
     vrmlin = vtk.vtkVRMLImporter()
     vrmlin.SetFileName(name_pd)
@@ -72,15 +85,14 @@ def process_file_bu_3dfe(config, file_name, o_dir):
     pd.GetPointData().SetScalars(None)
 
     # Load texture
-    textureImage = vtk.vtkBMPReader()
-    textureImage.SetFileName(name_bmp)
-    textureImage.Update()
+    texture_image = vtk.vtkBMPReader()
+    texture_image.SetFileName(name_bmp)
+    texture_image.Update()
 
     texture = vtk.vtkTexture()
     texture.SetInterpolate(1)
     texture.SetQualityTo32Bit()
-    texture.SetInputConnection(textureImage.GetOutputPort())
-
+    texture.SetInputConnection(texture_image.GetOutputPort())
 
     # Initialize Camera
     ren = vtk.vtkRenderer()
@@ -89,7 +101,6 @@ def process_file_bu_3dfe(config, file_name, o_dir):
     ren.GetActiveCamera().SetFocalPoint(0, 0, 0)
     ren.GetActiveCamera().SetViewUp(0, 1, 0)
     ren.GetActiveCamera().SetParallelProjection(1)
-
 
     # Initialize RenderWindow
     ren_win = vtk.vtkRenderWindow()
@@ -107,6 +118,11 @@ def process_file_bu_3dfe(config, file_name, o_dir):
     trans.SetInputData(pd)
     trans.SetTransform(t)
     trans.Update()
+
+    trans_lm = vtk.vtkTransformPolyDataFilter()
+    trans_lm.SetInputData(lms)
+    trans_lm.SetTransform(t)
+    trans_lm.Update()
 
     mapper = vtk.vtkPolyDataMapper()
     mapper.SetInputData(trans.GetOutput())
@@ -138,8 +154,6 @@ def process_file_bu_3dfe(config, file_name, o_dir):
     writer_png_2 = vtk.vtkPNGWriter()
     writer_png_2.SetInputConnection(scale.GetOutputPort())
 
-    # TODO remember landmarks
-
     for view in range(n_views):
         name_rgb = o_dir + base_name + '_' + str(view) + '_RGB.png'
         name_geometry = o_dir + base_name + '_' + str(view) + '_geometry.png'
@@ -147,8 +161,7 @@ def process_file_bu_3dfe(config, file_name, o_dir):
         name_2dlm = o_dir + base_name + '_' + str(view) + '_2DLM.txt'
 
         if not os.path.isfile(name_rgb):
-            print('Rendering ', name_rgb)
-
+            # print('Rendering ', name_rgb)
             rx, ry, rz, s, tx, ty = random_transform(config)
 
             t.Identity()
@@ -157,6 +170,7 @@ def process_file_bu_3dfe(config, file_name, o_dir):
             t.RotateZ(rz)
             t.Update()
             trans.Update()
+            trans_lm.Update()
 
             xmin = -150
             xmax = 150
@@ -171,7 +185,7 @@ def process_file_bu_3dfe(config, file_name, o_dir):
             cy = 0
             extend_factor = 1.0
             side_length = max([xlen, ylen]) * extend_factor
-            # zoomfac = win_size / side_length
+            zoom_fac = win_size / side_length
 
             ren.GetActiveCamera().SetParallelScale(side_length / 2)
             ren.GetActiveCamera().SetPosition(cx, cy, 500)
@@ -184,7 +198,7 @@ def process_file_bu_3dfe(config, file_name, o_dir):
             actor_geometry.SetVisibility(False)
             actor_text.SetVisibility(True)
             mapper.Modified()
-            ren.Modified() # force actors to have the correct visibility
+            ren.Modified()  # force actors to have the correct visibility
             ren_win.Render()
 
             w2if.Modified()  # Needed here else only first rendering is put to file
@@ -194,14 +208,14 @@ def process_file_bu_3dfe(config, file_name, o_dir):
             actor_text.SetVisibility(False)
             actor_geometry.SetVisibility(True)
             mapper.Modified()
-            ren.Modified() # force actors to have the correct visibility
+            ren.Modified()  # force actors to have the correct visibility
             ren_win.Render()
 
             w2if.Modified()  # Needed here else only first rendering is put to file
             writer_png.SetFileName(name_geometry)
             writer_png.Write()
 
-            ren.Modified() # force actors to have the correct visibility
+            ren.Modified()  # force actors to have the correct visibility
             ren_win.Render()
             w2if.SetInputBufferTypeToZBuffer()
             w2if.Modified()
@@ -212,8 +226,24 @@ def process_file_bu_3dfe(config, file_name, o_dir):
             actor_text.SetVisibility(True)
             ren.Modified()
 
+            # Write transformed landmarks
+            f = open(name_2dlm, 'w')
+
+            t_lm = trans_lm.GetOutput()
+            for i in range(t_lm.GetNumberOfPoints()):
+                x_pos = t_lm.GetPoint(i)[0]
+                y_pos = t_lm.GetPoint(i)[1]
+
+                x_pos_screen = (x_pos - cx) * zoom_fac + win_size / 2
+                y_pos_screen = -(y_pos - cy) * zoom_fac + win_size / 2
+
+                line = str(x_pos_screen) + ' ' + str(y_pos_screen) + '\n'
+                f.write(line)
+            f.close()
+
     del writer_png_2, writer_png, ren_win, actor_geometry, actor_text, mapper, w2if, t, trans, vrmlin, texture
-    del textureImage
+    del texture_image
+    del lms, trans_lm
 
     delete_lock_file(lock_file)
 

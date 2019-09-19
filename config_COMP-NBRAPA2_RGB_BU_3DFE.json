@@ -66,12 +66,12 @@
         "max_x_angle": 20,
         "min_y_angle": -60,
         "max_y_angle": 60,
-        "min_z_angle": -60,
-        "max_z_angle": 60
+        "min_z_angle": -40,
+        "max_z_angle": 40
     },
     "preparedata": {
         "raw_data_dir": "F:/DataNoBackup/BU_3DFE/",
         "processed_data_dir": "F:/DataNoBackup/BU_3DFE_processed/",
-        "off_screen_rendering": false
+        "off_screen_rendering": true
     }
 }
