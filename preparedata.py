@@ -183,8 +183,8 @@ def process_file_bu_3dfe(config, file_name, o_dir):
 
             actor_geometry.SetVisibility(False)
             actor_text.SetVisibility(True)
-            ren_win.Render()
-            ren_win.SetSize(win_size, win_size)
+            mapper.Modified()
+            ren.Modified() # force actors to have the correct visibility
             ren_win.Render()
 
             w2if.Modified()  # Needed here else only first rendering is put to file
@@ -193,19 +193,24 @@ def process_file_bu_3dfe(config, file_name, o_dir):
 
             actor_text.SetVisibility(False)
             actor_geometry.SetVisibility(True)
+            mapper.Modified()
+            ren.Modified() # force actors to have the correct visibility
+            ren_win.Render()
 
-            # w2if.Modified()  # Needed here else only first rendering is put to file
-            # writer_png.SetFileName(name_geometry)
-            # writer_png.Write()
+            w2if.Modified()  # Needed here else only first rendering is put to file
+            writer_png.SetFileName(name_geometry)
+            writer_png.Write()
 
-            # ren_win.Render()
-            # w2if.SetInputBufferTypeToZBuffer()
-            # w2if.Modified()
+            ren.Modified() # force actors to have the correct visibility
+            ren_win.Render()
+            w2if.SetInputBufferTypeToZBuffer()
+            w2if.Modified()
 
-            # writer_png_2.SetFileName(name_depth)
-            # writer_png_2.Write()
+            writer_png_2.SetFileName(name_depth)
+            writer_png_2.Write()
             actor_geometry.SetVisibility(False)
             actor_text.SetVisibility(True)
+            ren.Modified()
 
     del writer_png_2, writer_png, ren_win, actor_geometry, actor_text, mapper, w2if, t, trans, vrmlin, texture
     del textureImage
