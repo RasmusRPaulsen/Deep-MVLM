@@ -498,7 +498,9 @@ class Render3D:
                 w2if.Update()
 
             # add rendering to image stack
-            im = w2if.GetOutput()
+            # im = w2if.GetOutput()
+            scale.Update()
+            im = scale.GetOutput()
             rows, cols, _ = im.GetDimensions()
             sc = im.GetPointData().GetScalars()
             a = vtk_to_numpy(sc)
@@ -653,6 +655,7 @@ class Render3D:
         n_views = self.config['data_loader']['args']['n_views']
         win_size = self.config['data_loader']['args']['image_size']
 
+        # TODO Check if geometry should also be divided by 255
         if file_type == ".obj" and image_channels == "RGB":
             transformation_stack = self.generate_3d_transformations()
             image_stack = self.render_3d_obj_rgb(transformation_stack, file_name)
@@ -662,7 +665,7 @@ class Render3D:
             image_stack = self.render_3d_obj_geometry(transformation_stack, file_name)
         elif file_type == ".obj" and image_channels == "depth":
             transformation_stack = self.generate_3d_transformations()
-            image_stack = self.render_3d_obj_depth(transformation_stack, file_name)
+            image_stack = self.render_3d_obj_depth(transformation_stack, file_name) / 255
         elif file_type == ".obj" and image_channels == "RGB+depth":
             transformation_stack = self.generate_3d_transformations()
             image_stack_rgb = self.render_3d_obj_rgb(transformation_stack, file_name)
@@ -670,7 +673,7 @@ class Render3D:
             n_channels = 4
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:3] = image_stack_rgb / 255
-            image_stack[:, :, :, 3:4] = image_stack_depth
+            image_stack[:, :, :, 3:4] = image_stack_depth / 255
         elif file_type == ".obj" and image_channels == "geometry+depth":
             transformation_stack = self.generate_3d_transformations()
             image_stack_geometry = self.render_3d_obj_geometry(transformation_stack, file_name)
@@ -678,7 +681,7 @@ class Render3D:
             n_channels = 2
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:1] = image_stack_geometry
-            image_stack[:, :, :, 1:2] = image_stack_depth
+            image_stack[:, :, :, 1:2] = image_stack_depth / 255
         else:
             print("Can not render filetype ", file_type, " using image_channels ", image_channels)
 

@@ -34,6 +34,8 @@ def get_device_and_load_model(config):
         check_point_name = 'saved/trained/MVLMModel_DTU3D_geometry.pth'
     elif image_channels == "RGB":
         check_point_name = 'saved/trained/MVLMModel_DTU3D_RGB_07092019.pth'
+    elif image_channels == "depth":
+        check_point_name = 'saved/trained/MVLMModel_DTU3D_Depth_19092019.pth'
     logger.info('Loading checkpoint: {}'.format(check_point_name))
 
     device = get_working_device(config)
