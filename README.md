@@ -33,7 +33,20 @@ Start by requesting and downloading the database from [the official BU-3DFE site
 
 Secondly, download the 3D landmarks for the raw data from [Rasmus R. Paulsens homepage](http://people.compute.dtu.dk/rapa/BU-3DFE/BU_3DFE_84_landmarks_rapa.zip). The landmarks from the original BU-3DFE distribution is fitted to the cropped face data. Unfortunately, the raw and cropped face data are not in alignment. The data fra Rasmus' site has been aligned to the raw data, thus making it possible to train and evaluate on the raw face data. There are 84 landmarks in this set end they are defined as: (**TBD**)
 
-A set of example JSON configuration files are provided. Use for example config_RGB_BU_3DFE.json and modify it to your needs. Change raw_data_dir, processed_data_dir, data_dir (should be equal to processed_data_dir) to your setup.
+A set of example JSON configuration files are provided. Use for example config_RGB_BU_3DFE.json and modify it to your needs. Change *raw_data_dir*, *processed_data_dir*, *data_dir* (should be equal to processed_data_dir) to your setup.
+
+### Preparing the data
+In order to train the network the data should be prepared. This means that we pre-render a set of views for each input model. On the fly rendering during training is too slow due to the loading of the 3D models. Preparing the data is done by issuing the command:
+```
+python preparedata --c config_RGB_BU_3DFE.json
+```
+This will pre-render the image channels *rgb*, *geometry*, *depth*. If the *processed_data_dir* is set to for example *D:\data\BU-3DFE_processed\*, the rendered images will be placed in a folder *D:\data\BU-3DFE_processed\images\* and the corresponding 2D landmarks in a folder *D:\data\BU-3DFE_processed\2D LM\*. The renderings should look like this:
+
+![RGB rendering][art\rgb_rendering]![geometry rendering][art\geometry_rendering]![depth rendering][art\depth_rendering]
+
+
+
+
 
 
 ## Team
