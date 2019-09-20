@@ -8,7 +8,7 @@
             "n_landmarks": 84,
             "n_features": 256,
             "dropout_rate": 0.2,
-            "image_channels": "RGB"
+            "image_channels": "depth"
         }
     },
     "data_loader": {
@@ -17,7 +17,7 @@
             "data_dir": "F:/DataNoBackup/BU_3DFE_processed/",
             "heatmap_size": 256,
             "image_size": 256,
-            "image_channels": "RGB",
+            "image_channels": "depth",
             "n_views": 96,
             "batch_size": 8,
             "shuffle": true,

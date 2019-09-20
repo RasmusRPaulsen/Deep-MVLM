@@ -37,13 +37,22 @@ def random_transform(config):
     return rx, ry, rz, scale, tx, ty
 
 
-def process_file_bu_3dfe(config, file_name, o_dir):
+def process_file_bu_3dfe(config, file_name, output_dir):
     bu_3dfe_dir = config['preparedata']['raw_data_dir']
     base_name = os.path.basename(file_name)
     name_pd = bu_3dfe_dir + file_name + '_RAW.wrl'
     name_bmp = bu_3dfe_dir + file_name + '_F3D.bmp'
     name_lm = bu_3dfe_dir + file_name + '_RAW_84_LMS.txt'
-    lock_file = o_dir + base_name + '.lock'
+
+    name_path = os.path.dirname(file_name)
+    o_dir_image = output_dir + '/images/' + name_path + '/'
+    o_dir_lm = output_dir + '/2D LM/' + name_path + '/'
+    if not os.path.exists(o_dir_image):
+        os.makedirs(o_dir_image)
+    if not os.path.exists(o_dir_lm):
+        os.makedirs(o_dir_lm)
+
+    lock_file = o_dir_image + base_name + '.lock'
 
     if not os.path.isfile(name_pd):
         print(name_pd, ' could not read')
@@ -155,10 +164,10 @@ def process_file_bu_3dfe(config, file_name, o_dir):
     writer_png_2.SetInputConnection(scale.GetOutputPort())
 
     for view in range(n_views):
-        name_rgb = o_dir + base_name + '_' + str(view) + '_RGB.png'
-        name_geometry = o_dir + base_name + '_' + str(view) + '_geometry.png'
-        name_depth = o_dir + base_name + '_' + str(view) + '_zbuffer.png'
-        name_2dlm = o_dir + base_name + '_' + str(view) + '_2DLM.txt'
+        name_rgb = o_dir_image + base_name + '_' + str(view) + '.png'
+        name_geometry = o_dir_image + base_name + '_' + str(view) + '_geometry.png'
+        name_depth = o_dir_image + base_name + '_' + str(view) + '_zbuffer.png'
+        name_2dlm = o_dir_lm + base_name + '_' + str(view) + '.txt'
 
         if not os.path.isfile(name_rgb):
             # print('Rendering ', name_rgb)
@@ -252,9 +261,15 @@ def prepare_bu_3dfe_data(config):
     print('Preparing BU-3DFE data')
     file_id_list = config['preparedata']['raw_data_dir'] + 'BU_3DFE_base_filelist_noproblems.txt'
     output_dir = config['preparedata']['processed_data_dir']
+    image_out_dir = output_dir + 'images/'
+    lm_out_dir = output_dir + '2D LM/'
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
+    if not os.path.exists(image_out_dir):
+        os.makedirs(image_out_dir)
+    if not os.path.exists(lm_out_dir):
+        os.makedirs(lm_out_dir)
 
     base_file_names = []
     with open(file_id_list) as f:
@@ -267,11 +282,11 @@ def prepare_bu_3dfe_data(config):
 
     for base_name in base_file_names:
         print('Processing ', base_name)
-        name_path = os.path.dirname(base_name)
-        o_dir = output_dir + name_path + '/'
-        if not os.path.exists(o_dir):
-            os.makedirs(o_dir)
-        process_file_bu_3dfe(config, base_name, o_dir)
+        # name_path = os.path.dirname(base_name)
+        # o_dir = output_dir + name_path + '/'
+        # if not os.path.exists(o_dir):
+        # os.makedirs(o_dir)
+        process_file_bu_3dfe(config, base_name, output_dir)
 
 
 def main(config):
