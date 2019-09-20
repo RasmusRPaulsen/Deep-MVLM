@@ -257,6 +257,38 @@ def process_file_bu_3dfe(config, file_name, output_dir):
     delete_lock_file(lock_file)
 
 
+def split_data_into_train_and_test(base_file_names, output_dir):
+    train_file = output_dir + "dataset_train.txt"
+    test_file  = output_dir + "dataset_test.txt"
+    # F0001-F0046 + M0001-M0034 are used for training
+    # F0047-F0056 + M0035-M0054 are used for testing
+    f1 = open(train_file, 'w')
+    f2 = open(test_file, 'w')
+
+    new_set = []
+
+    for name in base_file_names:
+        n1 = os.path.dirname(name)
+        if n1.find('F') > -1:
+            n1 = n1.replace('F', '')
+            num = int(n1)
+            if num < 47:
+                new_set.append(name)
+                f1.write(name + '\n')
+            else:
+                f2.write(name + '\n')
+        if n1.find('M') > -1:
+            n1 = n1.replace('M', '')
+            num = int(n1)
+            if num < 35:
+                new_set.append(name)
+                f1.write(name + '\n')
+            else:
+                f2.write(name + '\n')
+    f1.close()
+    f2.close()
+    return new_set
+
 def prepare_bu_3dfe_data(config):
     print('Preparing BU-3DFE data')
     file_id_list = config['preparedata']['raw_data_dir'] + 'BU_3DFE_base_filelist_noproblems.txt'
@@ -280,12 +312,12 @@ def prepare_bu_3dfe_data(config):
                 base_file_names.append(line)
     print('Read ', len(base_file_names), ' file ids')
 
+    base_file_names = split_data_into_train_and_test(base_file_names, output_dir)
+
+    print('Processing ', len(base_file_names), ' file ids for training')
+
     for base_name in base_file_names:
         print('Processing ', base_name)
-        # name_path = os.path.dirname(base_name)
-        # o_dir = output_dir + name_path + '/'
-        # if not os.path.exists(o_dir):
-        # os.makedirs(o_dir)
         process_file_bu_3dfe(config, base_name, output_dir)
 
 

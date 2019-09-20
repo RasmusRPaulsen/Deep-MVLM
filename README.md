@@ -35,7 +35,7 @@ Secondly, download the 3D landmarks for the raw data from [Rasmus R. Paulsens ho
 
 A set of example JSON configuration files are provided. Use for example config_RGB_BU_3DFE.json and modify it to your needs. Change *raw_data_dir*, *processed_data_dir*, *data_dir* (should be equal to processed_data_dir) to your setup.
 
-### Preparing the data
+### Preparing the BU-3DFE data
 In order to train the network the data should be prepared. This means that we pre-render a set of views for each input model. On the fly rendering during training is too slow due to the loading of the 3D models. Preparing the data is done by issuing the command:
 
 ```
@@ -47,6 +47,11 @@ This will pre-render the image channels *rgb*, *geometry*, *depth*. If the *proc
 ![RGB rendering](art/rgb_rendering.png)![geometry rendering](art/geometry_rendering.png)![depth rendering](art/zbuffer_rendering.png)
 
 The corresponding landmark file is a standard text file with landmark positions corresponding to their placement in the rendered images. This means that this dataset can now be used to train a standard 2D face landmark detector.
+
+The dataset will also be split into a *training* and a *test* set. The ids of the scans used for training can be found in the *dataset_train.txt* file and the test set in the *dataset_test.txt* file.
+
+
+### Training on the BU-3DFE
 
 
 ## Team
