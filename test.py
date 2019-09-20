@@ -26,7 +26,7 @@ def get_device_and_load_model(config):
 
     print('Initialising model')
     model = config.initialize('arch', module_arch)
-    logger.info(model)
+    # logger.info(model)
 
     print('Loading checkpoint')
     image_channels = config['data_loader']['args']['image_channels']
@@ -36,6 +36,12 @@ def get_device_and_load_model(config):
         check_point_name = 'saved/trained/MVLMModel_DTU3D_RGB_07092019.pth'
     elif image_channels == "depth":
         check_point_name = 'saved/trained/MVLMModel_DTU3D_Depth_19092019.pth'
+    elif image_channels == "RGB+depth":
+        check_point_name = 'saved/trained/MVLMModel_DTU3D_RGB+depth_20092019.pth'
+    else:
+        print('No model trained for ', image_channels)
+        return None, None
+
     logger.info('Loading checkpoint: {}'.format(check_point_name))
 
     device = get_working_device(config)
@@ -116,15 +122,17 @@ def write_landmark_accuracy(gt_lm, pred_lm, file):
         print('Number of gt landmarks ', len(gt_lm), ' does not match number of predicted lm ', len(pred_lm))
         return None
 
+    sum_dist = 0
     for idx in range(len(gt_lm)):
         gt_p = gt_lm[idx]
         pr_p = pred_lm[idx]
         dst = distance.euclidean(gt_p, pr_p)
+        sum_dist = sum_dist + dst
         file.write(str(dst))
         if idx != len(gt_lm):
             file.write(', ')
     file.write('\n')
-
+    print('Average landmark error ', sum_dist / len(gt_lm))
 
 def get_landmark_bounds(lms):
     x_min = lms[0][0]

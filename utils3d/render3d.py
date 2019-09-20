@@ -1,7 +1,7 @@
 import vtk
 import numpy as np
 import time
-from tqdm import tqdm
+# from tqdm import tqdm
 from vtk.util.numpy_support import vtk_to_numpy
 import os
 
@@ -115,7 +115,8 @@ class Render3D:
         writer_png.SetInputConnection(w2ifb.GetOutputPort())
 
         start = time.time()
-        for idx in tqdm(range(n_views)):
+        # for idx in tqdm(range(n_views)):
+        for idx in range(n_views):
             name_geometry = self.config.temp_dir / ('rendering' + str(idx) + '.png')
             #        oname_depth = output_base + subject_name + "/" + faces + "_depth" + str(idx) + ".png"
             #        oname_image = output_base + subject_name + "/" + faces + "_image" + str(idx) + ".png"
@@ -316,7 +317,8 @@ class Render3D:
         writer_png.SetInputConnection(w2if.GetOutputPort())
 
         start = time.time()
-        for idx in tqdm(range(n_views)):
+        # for idx in tqdm(range(n_views)):
+        for idx in range(n_views):
             name_rendering = self.config.temp_dir / ('rendering' + str(idx) + '_geometry.png')
 
             rx, ry, rz, s, tx, ty = transform_stack[idx]
@@ -448,7 +450,8 @@ class Render3D:
         writer_png.SetInputConnection(scale.GetOutputPort())
 
         start = time.time()
-        for idx in tqdm(range(n_views)):
+        # for idx in tqdm(range(n_views)):
+        for idx in range(n_views):
             name_rendering = self.config.temp_dir / ('rendering' + str(idx) + '_depth.png')
 
             rx, ry, rz, s, tx, ty = transform_stack[idx]
@@ -579,7 +582,8 @@ class Render3D:
         writer_png.SetInputConnection(w2if.GetOutputPort())
 
         start = time.time()
-        for idx in tqdm(range(n_views)):
+        # for idx in tqdm(range(n_views)):
+        for idx in range(n_views):
             name_rendering = self.config.temp_dir / ('rendering' + str(idx) + '_RGB.png')
 
             rx, ry, rz, s, tx, ty = transform_stack[idx]
@@ -639,7 +643,7 @@ class Render3D:
             image_stack[idx, :, :, :] = a[:, :, :]
 
         end = time.time()
-        print("Pure TGB rendering time: " + str(end - start))
+        print("Pure RGB rendering time: " + str(end - start))
 
         del obj_in
         del writer_png, w2if

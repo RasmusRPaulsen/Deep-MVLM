@@ -262,10 +262,10 @@ class Utils3D:
         if used_lines == -1:
             print('Ransac failed - estimating from all lines')
             best_p = self.compute_intersection_between_lines(pa, pb)
-        else:
-            print('Ransac error ', best_error, ' with ', used_lines, ' lines')
+        # else:
+        # print('Ransac error ', best_error, ' with ', used_lines, ' lines')
 
-        return best_p
+        return best_p, best_error
 
     # return the lines that correspond to a high valued maxima in the heatmap
     def filter_lines_based_on_heatmap_value_using_quantiles(self, lm_no, pa, pb):
@@ -292,6 +292,7 @@ class Utils3D:
         n_landmarks = self.heatmap_maxima.shape[0]
         self.landmarks = np.zeros((n_landmarks, 3))
 
+        sum_error = 0
         for lm_no in range(n_landmarks):
             pa = self.lm_start[lm_no, :, :]
             pb = self.lm_end[lm_no, :, :]
@@ -304,8 +305,10 @@ class Utils3D:
                 print('Not enough valid view lines for landmark ', lm_no)
             else:
                 # p_intersect = self.compute_intersection_between_lines(pa, pb)
-                p_intersect = self.compute_intersection_between_lines_ransac(pa, pb)
+                p_intersect, best_error = self.compute_intersection_between_lines_ransac(pa, pb)
+                sum_error = sum_error + best_error
             self.landmarks[lm_no, :] = p_intersect
+        print("Ransac average error ", sum_error/n_landmarks)
 
     # Project found landmarks to closest point on the target surface
     def project_landmarks_to_surface(self, mesh_name):

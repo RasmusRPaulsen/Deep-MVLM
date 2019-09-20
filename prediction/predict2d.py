@@ -157,6 +157,8 @@ class Predict2D:
         show_result_image = False
         heatmap_maxima = np.zeros((n_landmarks, n_views, 3))
 
+        print('Predicting heatmaps for all views')
+        start = time.time()
         # process the views in batch sized chunks
         cur_id = 0
         while cur_id + batch_size <= n_views:
@@ -168,14 +170,10 @@ class Predict2D:
 
             # TODO: Should be done at load time - due to different scaling of channels
             # data = data / 255
-
             with torch.no_grad():
-                print('predicting heatmaps for batch ', cur_id, ' to ', cur_id + batch_size)
-                start = time.time()
+                # print('predicting heatmaps for batch ', cur_id, ' to ', cur_id + batch_size)
                 data = data.to(self.device)
                 output = self.model(data)
-                end = time.time()
-                print("Model prediction time: " + str(end - start))
 
                 if cur_id == 0 and show_result_image:
                     image = data[0, :, :, :].cpu()
@@ -188,4 +186,6 @@ class Predict2D:
 
             cur_id = cur_id + batch_size
 
+        end = time.time()
+        print("Model prediction time: " + str(end - start))
         return heatmap_maxima
