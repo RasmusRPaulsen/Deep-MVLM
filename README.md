@@ -49,14 +49,13 @@ This will pre-render the image channels *rgb*, *geometry*, *depth*. If the *proc
 The corresponding landmark file is a standard text file with landmark positions corresponding to their placement in the rendered images. This means that this dataset can now be used to train a standard 2D face landmark detector.
 
 
-
-
-
-
-
-
 ## Team
 Rasmus R. Paulsen and Kristine Aavild Juhl
 
 ## License
-Deep-MVLM is released under the MIT license. See the LICENSE file for more details.
+Deep-MVLM is released under the MIT license. See the [LICENSE file](LICENSE) for more details.
+
+## Credits
+This project is based on the PyTorch template  [pytorch-template](https://github.com/victoresque/pytorch-template) by [Victor Huang](https://github.com/victoresque)
+
+We gratefully acknowledge the support of NVIDIA Corporation with the donation of the Titan Xp GPU used for this research.
