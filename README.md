@@ -46,6 +46,10 @@ This will pre-render the image channels *rgb*, *geometry*, *depth*. If the *proc
 
 ![RGB rendering](art/rgb_rendering.png)![geometry rendering](art/geometry_rendering.png)![depth rendering](art/zbuffer_rendering.png)
 
+The corresponding landmark file is a standard text file with landmark positions corresponding to their placement in the rendered images. This means that this dataset can now be used to train a standard 2D face landmark detector.
+
+
+
 
 
 
