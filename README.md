@@ -37,10 +37,12 @@ A set of example JSON configuration files are provided. Use for example config_R
 
 ### Preparing the data
 In order to train the network the data should be prepared. This means that we pre-render a set of views for each input model. On the fly rendering during training is too slow due to the loading of the 3D models. Preparing the data is done by issuing the command:
+
 ```
 python preparedata --c config_RGB_BU_3DFE.json
 ```
-This will pre-render the image channels *rgb*, *geometry*, *depth*. If the *processed_data_dir* is set to for example *D:\data\BU-3DFE_processed\*, the rendered images will be placed in a folder *D:\data\BU-3DFE_processed\images\* and the corresponding 2D landmarks in a folder *D:\data\BU-3DFE_processed\2D LM\*. The renderings should look like this:
+
+This will pre-render the image channels *rgb*, *geometry*, *depth*. If the *processed_data_dir* is set to for example *D:\\data\\BU-3DFE_processed\\*, the rendered images will be placed in a folder *D:\data\BU-3DFE_processed\images\* and the corresponding 2D landmarks in a folder *D:\data\BU-3DFE_processed\2D LM\*. The renderings should look like this:
 
 ![RGB rendering][art\rgb_rendering]![geometry rendering][art\geometry_rendering]![depth rendering][art\depth_rendering]
 
