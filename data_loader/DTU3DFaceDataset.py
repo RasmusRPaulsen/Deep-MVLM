@@ -134,7 +134,10 @@ class DTU3DFaceDataset(Dataset):
             try:
                 img_t = imageio.imread(image_file)
                 org_size = img_t.shape[0]
-                img_in = transform.resize(img_t, (img_size, img_size), mode='constant')
+                if org_size == img_size:
+                    img_in = img_t / 255  # The resize operation scale the pixel values to [0,1]. With no scale we do it
+                else:
+                    img_in = transform.resize(img_t, (img_size, img_size), mode='constant')
             except IOError as e:
                 print("File ", image_file, " raises exception")
                 print("I/O error({0}): {1}".format(e.errno, e.strerror))
