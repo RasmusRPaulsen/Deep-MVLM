@@ -44,7 +44,7 @@ python preparedata --c config_RGB_BU_3DFE.json
 
 This will pre-render the image channels *rgb*, *geometry*, *depth*. If the *processed_data_dir* is set to for example *D:\\data\\BU-3DFE_processed\\*, the rendered images will be placed in a folder *D:\\data\\BU-3DFE_processed\\images\\* and the corresponding 2D landmarks in a folder *D:\\data\\BU-3DFE_processed\\2D LM\\*. The renderings should look like this:
 
-![RGB rendering](art/rgb_rendering)![geometry rendering](art/geometry_rendering)![depth rendering](art/depth_rendering)
+![RGB rendering](art/rgb_rendering.png)![geometry rendering](art/geometry_rendering.png)![depth rendering](art/depth_rendering.png)
 
 
 
