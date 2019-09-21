@@ -1,8 +1,10 @@
+import time
 import numpy as np
 import torch
 # from torchvision.utils import make_grid
 from base import BaseTrainer
 from utils import inf_loop
+import datetime
 
 
 class Trainer(BaseTrainer):
@@ -54,9 +56,12 @@ class Trainer(BaseTrainer):
         """
         self.model.train()
 
+        sum_time = 0
+        t_count = 0
         total_loss = 0
         total_metrics = np.zeros(len(self.metrics))
         for batch_idx, sample_batched in enumerate(self.data_loader):
+            start = time.time()
             data, target = sample_batched['image'], sample_batched['heat_map_stack']
             # TODO: This transform should probably not be done here
             data = data.permute(0, 3, 1, 2)  # from NHWC to NCHW
@@ -73,7 +78,7 @@ class Trainer(BaseTrainer):
             target = target.permute(0, 1, 4, 2, 3)
 
             # TODO: Figure out and clean up these conversions
-            output = output.to(torch.float)
+            # output = output.to(torch.float)
 
             loss = self.loss(output, target)
             loss.backward()
@@ -86,13 +91,18 @@ class Trainer(BaseTrainer):
             # TODO: Compute custom metrics (Landmark distances etc)
             # total_metrics += self._eval_metrics(output, target)
 
+            end = time.time()
+            sum_time = sum_time + end - start
+            t_count = t_count + 1
+            time_left = (self.len_epoch - batch_idx) * sum_time / t_count
             if batch_idx % self.log_step == 0:
-                self.logger.debug('Train Epoch: {} {} Loss: {:.6f}'.format(
+                self.logger.debug('Train Epoch: {} {} Loss: {:.6f} Time per epoch: {:.5} Time left in epoch: {}'.format(
                     epoch,
                     self._progress(batch_idx),
-                    loss.item()))
+                    loss.item(),
+                    sum_time / t_count,
+                    str(datetime.timedelta(seconds=time_left))))
                 # self.writer.add_image('input', make_grid(data.cpu(), nrow=8, normalize=True))
-
             if batch_idx == self.len_epoch:
                 break
 

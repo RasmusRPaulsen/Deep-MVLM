@@ -106,29 +106,37 @@ def main(config):
     # logger = config.get_logger('train')
 
     # setup data_loader instances
+    print('Initialising data loader')
     data_loader = config.initialize('data_loader', module_data)
+    print('Initialising validation data')
     valid_data_loader = data_loader.split_validation()
 
+    print('Initialising model')
     # build model architecture, then print to console
     model = config.initialize('arch', module_arch)
     # logger.info(model)
 
+    print('Initialising loss')
     # get function handles of loss and metrics
     loss = getattr(module_loss, config['loss'])
     metrics = [getattr(module_metric, met) for met in config['metrics']]
 
+    print('Initialising optimizer')
     # build optimizer, learning rate scheduler. delete every lines containing lr_scheduler for disabling scheduler
     trainable_params = filter(lambda p: p.requires_grad, model.parameters())
     optimizer = config.initialize('optimizer', torch.optim, trainable_params)
 
+    print('Initialising scheduler')
     lr_scheduler = config.initialize('lr_scheduler', torch.optim.lr_scheduler, optimizer)
 
+    print('Initialising trainer')
     trainer = Trainer(model, loss, metrics, optimizer,
                       config=config,
                       data_loader=data_loader,
                       valid_data_loader=valid_data_loader,
                       lr_scheduler=lr_scheduler)
 
+    print('starting to train')
     trainer.train()
 
 

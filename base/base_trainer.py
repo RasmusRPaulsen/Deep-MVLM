@@ -19,7 +19,7 @@ class BaseTrainer:
             self.model = torch.nn.DataParallel(model, device_ids=device_ids)
 
         # TODO: Check if this helps
-        # torch.backends.cudnn.benchmark = True
+        torch.backends.cudnn.benchmark = True
         self.loss = loss
         self.metrics = metrics
         self.optimizer = optimizer
