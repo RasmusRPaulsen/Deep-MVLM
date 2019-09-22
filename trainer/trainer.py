@@ -96,7 +96,7 @@ class Trainer(BaseTrainer):
             t_count = t_count + 1
             time_left = (self.len_epoch - batch_idx) * sum_time / t_count
             if batch_idx % self.log_step == 0:
-                self.logger.debug('Train Epoch: {} {} Loss: {:.6f} Time per epoch: {:.5} Time left in epoch: {}'.format(
+                self.logger.debug('Train Epoch: {} {} Loss: {:.6f} Time per batch: {:.5} Time left in epoch: {}'.format(
                     epoch,
                     self._progress(batch_idx),
                     loss.item(),
@@ -110,6 +110,9 @@ class Trainer(BaseTrainer):
             'loss': total_loss / self.len_epoch,
             # 'metrics': (total_metrics / self.len_epoch).tolist()
         }
+        print('Debug saving checkpoint')  # TODO only for debug purposes
+        self._save_checkpoint(epoch, save_best=False)
+        
         print('Doing validation')
         if self.do_validation:
             val_log = self._valid_epoch(epoch)
