@@ -1,3 +1,5 @@
+Logging:
+ - be stringent in using the logging tool
 
 Testing
  - better max finding (ok)
