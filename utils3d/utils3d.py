@@ -1,6 +1,6 @@
 import numpy as np
 import vtk
-
+import os
 
 class Utils3D:
     def __init__(self, config):
@@ -310,15 +310,31 @@ class Utils3D:
             self.landmarks[lm_no, :] = p_intersect
         print("Ransac average error ", sum_error/n_landmarks)
 
+    def multi_read_surface(self, file_name):
+        clean_name, file_extension = os.path.splitext(file_name)
+        if file_extension == ".obj":
+            obj_in = vtk.vtkOBJReader()
+            obj_in.SetFileName(file_name)
+            obj_in.Update()
+            pd = obj_in.GetOutput()
+            return pd
+        elif file_extension == ".wrl":
+            vrmlin = vtk.vtkVRMLImporter()
+            vrmlin.SetFileName(file_name)
+            vrmlin.Update()
+            pd = vrmlin.GetRenderer().GetActors().GetLastActor().GetMapper().GetInput()
+            return pd
+
     # Project found landmarks to closest point on the target surface
     def project_landmarks_to_surface(self, mesh_name):
         # TODO: this should accept more file types
-        obj_in = vtk.vtkOBJReader()
-        obj_in.SetFileName(mesh_name)
-        obj_in.Update()
+        # obj_in = vtk.vtkOBJReader()
+        # obj_in.SetFileName(mesh_name)
+        # obj_in.Update()
+        pd = self.multi_read_surface(mesh_name)
 
         clean = vtk.vtkCleanPolyData()
-        clean.SetInputConnection(obj_in.GetOutputPort())
+        clean.SetInputConnection(pd.GetOutputPort())
         clean.Update()
 
         locator = vtk.vtkCellLocator()
@@ -341,7 +357,7 @@ class Utils3D:
             projected_landmarks[i, :] = tcp
 
         self.landmarks = projected_landmarks
-        del obj_in
+        del pd
         del clean
         del locator
 
