@@ -21,14 +21,29 @@ class Render3D:
         self.config = config
 
     def random_transform(self):
-        # TODO the limit values should come from a config fie
-        # These values are for the DTU-3D set
-        rx = np.double(np.random.randint(-40, 40, 1))
-        ry = np.double(np.random.randint(-80, 80, 1))
-        rz = np.double(np.random.randint(-20, 20, 1))
+        min_x = self.config['process_3d']['min_x_angle']
+        max_x = self.config['process_3d']['max_x_angle']
+        min_y = self.config['process_3d']['min_y_angle']
+        max_y = self.config['process_3d']['max_y_angle']
+        min_z = self.config['process_3d']['min_z_angle']
+        max_z = self.config['process_3d']['max_z_angle']
+
+        rx = np.double(np.random.randint(min_x, max_x, 1))
+        ry = np.double(np.random.randint(min_y, max_y, 1))
+        rz = np.double(np.random.randint(min_z, max_z, 1))
+        # TODO the following values are not used
         scale = np.double(np.random.uniform(1.4, 1.9, 1))
         tx = np.double(np.random.randint(-20, 20, 1))
         ty = np.double(np.random.randint(-20, 20, 1))
+
+        # TODO the limit values should come from a config fie
+        # These values are for the DTU-3D set
+        # rx = np.double(np.random.randint(-40, 40, 1))
+        # ry = np.double(np.random.randint(-80, 80, 1))
+        # rz = np.double(np.random.randint(-20, 20, 1))
+        # scale = np.double(np.random.uniform(1.4, 1.9, 1))
+        # tx = np.double(np.random.randint(-20, 20, 1))
+        # ty = np.double(np.random.randint(-20, 20, 1))
 
         # Kristines values for BU-3DFE
         # rx = np.double(np.random.randint(-90, 20, 1))
@@ -650,7 +665,214 @@ class Render3D:
         del ren, ren_win, t
         return image_stack
 
-    def render_3d_file(self, file_name):
+    def render_3d_wrl_rgb(self, transform_stack, file_name, texture_file_name=None):
+        write_image_files = self.config['process_3d']['write_renderings']
+        off_screen_rendering = self.config['process_3d']['off_screen_rendering']
+        n_views = self.config['data_loader']['args']['n_views']
+        img_size = self.config['data_loader']['args']['image_size']
+        win_size = img_size
+
+        n_channels = 5  # 3 for RGB, 1 for depth and 1 for geometry
+        image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
+
+        vrmlin = vtk.vtkVRMLImporter()
+        vrmlin.SetFileName(file_name)
+        vrmlin.Update()
+
+        pd = vrmlin.GetRenderer().GetActors().GetLastActor().GetMapper().GetInput()
+        pd.GetPointData().SetScalars(None)
+
+        # Load texture
+        if texture_file_name is not None:
+            texture_image = vtk.vtkBMPReader()
+            texture_image.SetFileName(texture_file_name)
+            texture_image.Update()
+
+            texture = vtk.vtkTexture()
+            texture.SetInterpolate(1)
+            texture.SetQualityTo32Bit()
+            texture.SetInputConnection(texture_image.GetOutputPort())
+
+        # Initialize Camera
+        ren = vtk.vtkRenderer()
+        ren.SetBackground(1, 1, 1)
+        ren.GetActiveCamera().SetPosition(0, 0, 1)
+        ren.GetActiveCamera().SetFocalPoint(0, 0, 0)
+        ren.GetActiveCamera().SetViewUp(0, 1, 0)
+        ren.GetActiveCamera().SetParallelProjection(1)
+
+        # Initialize RenderWindow
+        ren_win = vtk.vtkRenderWindow()
+        ren_win.AddRenderer(ren)
+        ren_win.SetSize(win_size, win_size)
+        ren_win.SetOffScreenRendering(off_screen_rendering)
+
+        # Initialize Transform
+        t = vtk.vtkTransform()
+        t.Identity()
+        t.Update()
+
+        # Transform (assuming only one mesh)
+        trans = vtk.vtkTransformPolyDataFilter()
+        trans.SetInputData(pd)
+        trans.SetTransform(t)
+        trans.Update()
+
+        mapper = vtk.vtkPolyDataMapper()
+        mapper.SetInputData(trans.GetOutput())
+
+        actor_text = vtk.vtkActor()
+        actor_text.SetMapper(mapper)
+        actor_text.SetTexture(texture)
+        actor_text.GetProperty().SetColor(1, 1, 1)
+        actor_text.GetProperty().SetAmbient(1.0)
+        actor_text.GetProperty().SetSpecular(0)
+        actor_text.GetProperty().SetDiffuse(0)
+        ren.AddActor(actor_text)
+
+        actor_geometry = vtk.vtkActor()
+        actor_geometry.SetMapper(mapper)
+        ren.AddActor(actor_geometry)
+
+        w2if = vtk.vtkWindowToImageFilter()
+        w2if.SetInput(ren_win)
+        writer_png = vtk.vtkPNGWriter()
+        writer_png.SetInputConnection(w2if.GetOutputPort())
+
+        scale = vtk.vtkImageShiftScale()
+        scale.SetOutputScalarTypeToUnsignedChar()
+        scale.SetInputConnection(w2if.GetOutputPort())
+        scale.SetShift(0)
+        scale.SetScale(-255)
+
+        writer_png_2 = vtk.vtkPNGWriter()
+        writer_png_2.SetInputConnection(scale.GetOutputPort())
+
+        for view in range(n_views):
+            name_rgb = str(self.config.temp_dir / ('rendering' + str(view) + '_RGB.png'))
+            name_depth = str(self.config.temp_dir / ('rendering' + str(view) + '_zbuffer.png'))
+            name_geometry = str(self.config.temp_dir / ('rendering' + str(view) + '_geometry.png'))
+
+            # print('Rendering ', name_rgb)
+            rx, ry, rz, s, tx, ty = self.random_transform()
+
+            t.Identity()
+            t.RotateY(ry)
+            t.RotateX(rx)
+            t.RotateZ(rz)
+            t.Update()
+            trans.Update()
+
+            xmin = -150
+            xmax = 150
+            ymin = -150
+            ymax = 150
+            zmin = trans.GetOutput().GetBounds()[4]
+            zmax = trans.GetOutput().GetBounds()[5]
+            xlen = xmax - xmin
+            ylen = ymax - ymin
+
+            cx = 0
+            cy = 0
+            extend_factor = 1.0
+            side_length = max([xlen, ylen]) * extend_factor
+            zoom_fac = win_size / side_length
+
+            ren.GetActiveCamera().SetParallelScale(side_length / 2)
+            ren.GetActiveCamera().SetPosition(cx, cy, 500)
+            ren.GetActiveCamera().SetFocalPoint(cx, cy, 0)
+            ren.GetActiveCamera().SetClippingRange(500 - zmax - slack, 500 - zmin + slack)
+
+            # TODO Check save flag and put data into numpy array
+            # Save textured image
+            w2if.SetInputBufferTypeToRGB()
+
+            actor_geometry.SetVisibility(False)
+            actor_text.SetVisibility(True)
+            mapper.Modified()
+            ren.Modified()  # force actors to have the correct visibility
+            ren_win.Render()
+
+            if write_image_files:
+                w2if.Modified()  # Needed here else only first rendering is put to file
+                writer_png.SetFileName(name_rgb)
+                writer_png.Write()
+            else:
+                w2if.Modified()  # Needed here else only first rendering is put to file
+                w2if.Update()
+
+            # add rendering to image stack
+            im = w2if.GetOutput()
+            rows, cols, _ = im.GetDimensions()
+            sc = im.GetPointData().GetScalars()
+            a = vtk_to_numpy(sc)
+            components = sc.GetNumberOfComponents()
+            a = a.reshape(rows, cols, components)
+            a = np.flipud(a)
+
+            # get RGB data - 3 first channels
+            image_stack[view, :, :, 0:3] = a[:, :, :]
+
+            actor_text.SetVisibility(False)
+            actor_geometry.SetVisibility(True)
+            mapper.Modified()
+            ren.Modified()  # force actors to have the correct visibility
+            ren_win.Render()
+
+            if write_image_files:
+                w2if.Modified()  # Needed here else only first rendering is put to file
+                writer_png.SetFileName(name_geometry)
+                writer_png.Write()
+            else:
+                w2if.Modified()  # Needed here else only first rendering is put to file
+                w2if.Update()
+
+            # add rendering to image stack
+            im = w2if.GetOutput()
+            rows, cols, _ = im.GetDimensions()
+            sc = im.GetPointData().GetScalars()
+            a = vtk_to_numpy(sc)
+            components = sc.GetNumberOfComponents()
+            a = a.reshape(rows, cols, components)
+            a = np.flipud(a)
+
+            # get geometry data
+            image_stack[view, :, :, 3:4] = a[:, :, 0]
+
+
+            ren.Modified()  # force actors to have the correct visibility
+            ren_win.Render()
+            w2if.SetInputBufferTypeToZBuffer()
+            w2if.Modified()
+
+            if write_image_files:
+                w2if.Modified()  # Needed here else only first rendering is put to file
+                writer_png_2.SetFileName(name_depth)
+                writer_png_2.Write()
+            else:
+                w2if.Modified()  # Needed here else only first rendering is put to file
+                w2if.Update()
+
+            scale.Update()
+            im = scale.GetOutput()
+            rows, cols, _ = im.GetDimensions()
+            sc = im.GetPointData().GetScalars()
+            a = vtk_to_numpy(sc)
+            components = sc.GetNumberOfComponents()
+            a = a.reshape(rows, cols, components)
+            a = np.flipud(a)
+
+            # For now just take the first channel
+            image_stack[view, :, :, 4:5] = a[:, :, 0]
+
+            actor_geometry.SetVisibility(False)
+            actor_text.SetVisibility(True)
+            ren.Modified()
+
+        del writer_png_2, writer_png, ren_win, actor_geometry, actor_text, mapper, w2if, t, trans, vrmlin, texture
+        del texture_image
+
+    def render_3d_file(self, file_name, texture_file_name=None):
         image_channels = self.config['data_loader']['args']['image_channels']
         file_type = os.path.splitext(file_name)[1]
 
@@ -663,6 +885,10 @@ class Render3D:
         if file_type == ".obj" and image_channels == "RGB":
             transformation_stack = self.generate_3d_transformations()
             image_stack = self.render_3d_obj_rgb(transformation_stack, file_name)
+            image_stack = image_stack / 255
+        elif file_type == ".wrl" and image_channels == "RGB":
+            transformation_stack = self.generate_3d_transformations()
+            image_stack = self.render_3d_wrl_rgb(transformation_stack, file_name, texture_file_name)
             image_stack = image_stack / 255
         elif file_type == ".obj" and image_channels == "geometry":
             transformation_stack = self.generate_3d_transformations()

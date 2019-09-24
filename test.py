@@ -134,6 +134,7 @@ def write_landmark_accuracy(gt_lm, pred_lm, file):
     file.write('\n')
     print('Average landmark error ', sum_dist / len(gt_lm))
 
+
 def get_landmark_bounds(lms):
     x_min = lms[0][0]
     x_max = x_min
@@ -262,6 +263,63 @@ def test_on_dtu_3d(config):
             print('File', obj_name, ' does not exists')
 
 
+def test_on_bu_3d_fe(config):
+    test_set_file = config['data_loader']['args']['data_dir'] + '/data_set_train.txt'  # TODO Change to test set
+    # test_set_file = config['data_loader']['args']['data_dir'] + '/face_dataset_debug.txt'
+    result_file = config.temp_dir / 'results.csv'
+
+    device, model = get_device_and_load_model(config)
+
+    files = []
+    with open(test_set_file) as f:
+        for line in f:
+            line = line.strip("/n")
+            clean_name = os.path.splitext(line)[0]
+            if len(clean_name) > 0:
+                files.append(clean_name)
+    print('Read', len(files), 'files to run test on')
+
+    bu_3dfe_dir = config['preparedata']['raw_data_dir']
+
+    idx = 0
+    res_f = open(result_file, "w")
+    for f_name in files:
+        lm_name = bu_3dfe_dir + f_name + '_RAW_84_LMS.txt'
+        wrl_name = bu_3dfe_dir + f_name + '_RAW.wrl'
+        bmp_name = bu_3dfe_dir + f_name + '_F3D.bmp'
+
+        gt_lms = read_3d_landmarks(lm_name)
+        if os.path.isfile(wrl_name):
+            print('Computing file ', idx, ' of ', len(files))
+
+            render_3d = Render3D(config)
+            image_stack, transform_stack = render_3d.render_3d_file(wrl_name, bmp_name)
+
+            predict_2d = Predict2D(config, model, device)
+            heatmap_maxima = predict_2d.predict_heatmaps_from_images(image_stack)
+
+            print('Computing 3D landmarks')
+            u3d = Utils3D(config)
+            u3d.heatmap_maxima = heatmap_maxima
+            u3d.transformations_3d = transform_stack
+            u3d.compute_lines_from_heatmap_maxima()
+            # u3d.visualise_one_landmark_lines(33)
+            # u3d.visualise_one_landmark_lines(32)
+            u3d.compute_all_landmarks_from_view_lines()
+            u3d.project_landmarks_to_surface(wrl_name)
+            pred_lms = u3d.landmarks
+
+            res_f.write(f_name + ', ')
+            write_landmark_accuracy(gt_lms, pred_lms, res_f)
+            res_f.flush()
+
+            sphere_file = config.temp_dir / (f_name + '_landmarkAccuracy.vtk')
+            visualise_landmarks_as_spheres_with_accuracy(gt_lms, pred_lms, str(sphere_file))
+            idx = idx + 1
+        else:
+            print('File', wrl_name, ' does not exists')
+
+
 def main(config):
     # subject_name = 'I:/Data/temp/MartinStandard.obj'
     # subject_name = 'D:/Data/temp/MartinStandard.obj'
@@ -270,7 +328,8 @@ def main(config):
     # file_name = 'D:/Data/temp/20130715150920_standard.obj'
     # file_name = 'D:/Data/temp/20121105144354_standard.obj'
     # predict_one_subject(config, file_name)
-    test_on_dtu_3d(config)
+    # test_on_dtu_3d(config)
+    test_on_bu_3d_fe(config)
 
 
 if __name__ == '__main__':

@@ -25,7 +25,6 @@ def random_transform(config):
     min_z = config['process_3d']['min_z_angle']
     max_z = config['process_3d']['max_z_angle']
 
-    # These values are for the DTU-3D set
     rx = np.double(np.random.randint(min_x, max_x, 1))
     ry = np.double(np.random.randint(min_y, max_y, 1))
     rz = np.double(np.random.randint(min_z, max_z, 1))
