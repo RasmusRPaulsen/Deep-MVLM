@@ -334,7 +334,8 @@ class Utils3D:
         pd = self.multi_read_surface(mesh_name)
 
         clean = vtk.vtkCleanPolyData()
-        clean.SetInputConnection(pd.GetOutputPort())
+        clean.SetInputData(pd)
+        # clean.SetInputConnection(pd.GetOutputPort())
         clean.Update()
 
         locator = vtk.vtkCellLocator()

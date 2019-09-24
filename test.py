@@ -29,17 +29,29 @@ def get_device_and_load_model(config):
     # logger.info(model)
 
     print('Loading checkpoint')
-    image_channels = config['data_loader']['args']['image_channels']
-    if image_channels == "geometry":
-        check_point_name = 'saved/trained/MVLMModel_DTU3D_geometry.pth'
-    elif image_channels == "RGB":
-        check_point_name = 'saved/trained/MVLMModel_DTU3D_RGB_07092019.pth'
-    elif image_channels == "depth":
-        check_point_name = 'saved/trained/MVLMModel_DTU3D_Depth_19092019.pth'
-    elif image_channels == "RGB+depth":
-        check_point_name = 'saved/trained/MVLMModel_DTU3D_RGB+depth_20092019.pth'
+    model_name = config['name']
+    if model_name == "MVLMModel_DTU3D":
+        image_channels = config['data_loader']['args']['image_channels']
+        if image_channels == "geometry":
+            check_point_name = 'saved/trained/MVLMModel_DTU3D_geometry.pth'
+        elif image_channels == "RGB":
+            check_point_name = 'saved/trained/MVLMModel_DTU3D_RGB_07092019.pth'
+        elif image_channels == "depth":
+            check_point_name = 'saved/trained/MVLMModel_DTU3D_Depth_19092019.pth'
+        elif image_channels == "RGB+depth":
+            check_point_name = 'saved/trained/MVLMModel_DTU3D_RGB+depth_20092019.pth'
+        else:
+            print('No model trained for ', model_name, ' with channels ', image_channels)
+            return None, None
+    elif model_name == 'MVLMModel_BU_3DFE':
+        image_channels = config['data_loader']['args']['image_channels']
+        if image_channels == "RGB":
+            check_point_name = 'saved/trained/MVLMModel_BU_3DFE_RGB_24092019_6epoch.pth'
+        else:
+            print('No model trained for ', model_name, ' with channels ', image_channels)
+            return None, None
     else:
-        print('No model trained for ', image_channels)
+        print('No model trained for ', model_name)
         return None, None
 
     logger.info('Loading checkpoint: {}'.format(check_point_name))
@@ -264,7 +276,7 @@ def test_on_dtu_3d(config):
 
 
 def test_on_bu_3d_fe(config):
-    test_set_file = config['data_loader']['args']['data_dir'] + '/data_set_train.txt'  # TODO Change to test set
+    test_set_file = config['data_loader']['args']['data_dir'] + '/dataset_train_debug.txt'  # TODO Change to test set
     # test_set_file = config['data_loader']['args']['data_dir'] + '/face_dataset_debug.txt'
     result_file = config.temp_dir / 'results.csv'
 
@@ -274,6 +286,7 @@ def test_on_bu_3d_fe(config):
     with open(test_set_file) as f:
         for line in f:
             line = line.strip("/n")
+            line = line.strip("\n")
             clean_name = os.path.splitext(line)[0]
             if len(clean_name) > 0:
                 files.append(clean_name)

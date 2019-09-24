@@ -671,6 +671,7 @@ class Render3D:
         n_views = self.config['data_loader']['args']['n_views']
         img_size = self.config['data_loader']['args']['image_size']
         win_size = img_size
+        slack = 5
 
         n_channels = 5  # 3 for RGB, 1 for depth and 1 for geometry
         image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
@@ -692,6 +693,7 @@ class Render3D:
             texture.SetInterpolate(1)
             texture.SetQualityTo32Bit()
             texture.SetInputConnection(texture_image.GetOutputPort())
+            del texture_image
 
         # Initialize Camera
         ren = vtk.vtkRenderer()
@@ -723,7 +725,8 @@ class Render3D:
 
         actor_text = vtk.vtkActor()
         actor_text.SetMapper(mapper)
-        actor_text.SetTexture(texture)
+        if texture_file_name is not None:
+            actor_text.SetTexture(texture)
         actor_text.GetProperty().SetColor(1, 1, 1)
         actor_text.GetProperty().SetAmbient(1.0)
         actor_text.GetProperty().SetSpecular(0)
@@ -776,14 +779,13 @@ class Render3D:
             cy = 0
             extend_factor = 1.0
             side_length = max([xlen, ylen]) * extend_factor
-            zoom_fac = win_size / side_length
+            # zoom_fac = win_size / side_length
 
             ren.GetActiveCamera().SetParallelScale(side_length / 2)
             ren.GetActiveCamera().SetPosition(cx, cy, 500)
             ren.GetActiveCamera().SetFocalPoint(cx, cy, 0)
             ren.GetActiveCamera().SetClippingRange(500 - zmax - slack, 500 - zmin + slack)
 
-            # TODO Check save flag and put data into numpy array
             # Save textured image
             w2if.SetInputBufferTypeToRGB()
 
@@ -837,8 +839,7 @@ class Render3D:
             a = np.flipud(a)
 
             # get geometry data
-            image_stack[view, :, :, 3:4] = a[:, :, 0]
-
+            image_stack[view, :, :, 3:4] = a[:, :, 0:1]
 
             ren.Modified()  # force actors to have the correct visibility
             ren_win.Render()
@@ -862,15 +863,16 @@ class Render3D:
             a = a.reshape(rows, cols, components)
             a = np.flipud(a)
 
-            # For now just take the first channel
-            image_stack[view, :, :, 4:5] = a[:, :, 0]
+            # get depth data
+            image_stack[view, :, :, 4:5] = a[:, :, 0:1]
 
             actor_geometry.SetVisibility(False)
             actor_text.SetVisibility(True)
             ren.Modified()
 
         del writer_png_2, writer_png, ren_win, actor_geometry, actor_text, mapper, w2if, t, trans, vrmlin, texture
-        del texture_image
+        # del texture_image
+        return image_stack
 
     def render_3d_file(self, file_name, texture_file_name=None):
         image_channels = self.config['data_loader']['args']['image_channels']
@@ -888,8 +890,10 @@ class Render3D:
             image_stack = image_stack / 255
         elif file_type == ".wrl" and image_channels == "RGB":
             transformation_stack = self.generate_3d_transformations()
-            image_stack = self.render_3d_wrl_rgb(transformation_stack, file_name, texture_file_name)
-            image_stack = image_stack / 255
+            image_stack_full = self.render_3d_wrl_rgb(transformation_stack, file_name, texture_file_name)
+            n_channels = 3
+            image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
+            image_stack[:, :, :, 0:3] = image_stack_full[:, :, :, 0:3] / 255
         elif file_type == ".obj" and image_channels == "geometry":
             transformation_stack = self.generate_3d_transformations()
             image_stack = self.render_3d_obj_geometry(transformation_stack, file_name)
