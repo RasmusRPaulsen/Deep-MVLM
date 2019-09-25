@@ -757,7 +757,7 @@ class Render3D:
             name_geometry = str(self.config.temp_dir / ('rendering' + str(view) + '_geometry.png'))
 
             # print('Rendering ', name_rgb)
-            rx, ry, rz, s, tx, ty = self.random_transform()
+            rx, ry, rz, s, tx, ty = transform_stack[view]
 
             t.Identity()
             t.RotateY(ry)

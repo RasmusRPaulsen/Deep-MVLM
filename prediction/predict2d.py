@@ -92,7 +92,7 @@ class Predict2D:
         hm_size = heat_map.shape[2]
         i = image.copy()
 
-        coordinates = self.find_heat_map_maxima(heat_map, method='simple')
+        coordinates = self.find_heat_map_maxima(heat_map, method='moment')
 
         # the predicted heat map is sometimes smaller than the input image
         factor = im_size / hm_size
@@ -150,13 +150,14 @@ class Predict2D:
         plt.ioff()
         plt.show()
 
-    def write_batch_of_heatmaps(self, heatmaps, image, cur_id):
+    def write_batch_of_heatmaps(self, heatmaps, images, cur_id):
         batch_size = heatmaps.shape[0]
 
         for idx in range(batch_size):
             name_hm_maxima = str(self.config.temp_dir / ('heatmap' + str(cur_id + idx) + '.png'))
             name_hm_maxima_2 = str(self.config.temp_dir / ('heatmap_max' + str(cur_id + idx) + '.png'))
             heatmap = heatmaps[idx, :, :, :]
+            heatmap = heatmap.numpy()
             hm_size = heatmap.shape[2]
 
             hm = np.zeros((hm_size, hm_size, 3))
@@ -175,7 +176,7 @@ class Predict2D:
 
             imageio.imwrite(name_hm_maxima, hm)
 
-            im = image[idx]
+            im = images[idx]
             im_marked = self.generate_image_with_heatmap_maxima(im, heatmap)
 
             imageio.imwrite(name_hm_maxima_2, im_marked)
@@ -185,7 +186,7 @@ class Predict2D:
         batch_size = self.config['data_loader']['args']['batch_size']
         n_landmarks = self.config['arch']['args']['n_landmarks']
 
-        write_heatmaps = True
+        write_heatmaps = False
         show_result_image = False
         heatmap_maxima = np.zeros((n_landmarks, n_views, 3))
 
@@ -216,7 +217,7 @@ class Predict2D:
                 heatmaps = output[1, :, :, :, :].cpu()
                 self.find_maxima_in_batch_of_heatmaps(heatmaps, cur_id, heatmap_maxima)
                 if write_heatmaps:
-                    self.write_batch_of_heatmaps(heatmaps, cur_id)
+                    self.write_batch_of_heatmaps(heatmaps, cur_images, cur_id)
 
             cur_id = cur_id + batch_size
 

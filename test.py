@@ -316,7 +316,7 @@ def test_on_bu_3d_fe(config):
             u3d.heatmap_maxima = heatmap_maxima
             u3d.transformations_3d = transform_stack
             u3d.compute_lines_from_heatmap_maxima()
-            # u3d.visualise_one_landmark_lines(33)
+            # u3d.visualise_one_landmark_lines(83)
             # u3d.visualise_one_landmark_lines(32)
             u3d.compute_all_landmarks_from_view_lines()
             u3d.project_landmarks_to_surface(wrl_name)
@@ -326,7 +326,8 @@ def test_on_bu_3d_fe(config):
             write_landmark_accuracy(gt_lms, pred_lms, res_f)
             res_f.flush()
 
-            sphere_file = config.temp_dir / (f_name + '_landmarkAccuracy.vtk')
+            base_name = os.path.basename(f_name)
+            sphere_file = config.temp_dir / (base_name + '_landmarkAccuracy.vtk')
             visualise_landmarks_as_spheres_with_accuracy(gt_lms, pred_lms, str(sphere_file))
             idx = idx + 1
         else:
