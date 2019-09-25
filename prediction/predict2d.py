@@ -1,3 +1,4 @@
+import imageio
 import torch
 import numpy as np
 import time
@@ -149,11 +150,42 @@ class Predict2D:
         plt.ioff()
         plt.show()
 
+    def write_batch_of_heatmaps(self, heatmaps, image, cur_id):
+        batch_size = heatmaps.shape[0]
+
+        for idx in range(batch_size):
+            name_hm_maxima = str(self.config.temp_dir / ('heatmap' + str(cur_id + idx) + '.png'))
+            name_hm_maxima_2 = str(self.config.temp_dir / ('heatmap_max' + str(cur_id + idx) + '.png'))
+            heatmap = heatmaps[idx, :, :, :]
+            hm_size = heatmap.shape[2]
+
+            hm = np.zeros((hm_size, hm_size, 3))
+            n_lm = heatmap.shape[0]
+            for lm in range(n_lm):
+                r = random.random()  # generate random colour placed on the unit sphere in RGB space
+                g = random.random()
+                b = random.random()
+                length = math.sqrt(r * r + g * g + b * b)
+                r = r / length
+                g = g / length
+                b = b / length
+                hm[:, :, 0] = hm[:, :, 0] + heatmap[lm, :, :] * r
+                hm[:, :, 1] = hm[:, :, 1] + heatmap[lm, :, :] * g
+                hm[:, :, 2] = hm[:, :, 2] + heatmap[lm, :, :] * b
+
+            imageio.imwrite(name_hm_maxima, hm)
+
+            im = image[idx]
+            im_marked = self.generate_image_with_heatmap_maxima(im, heatmap)
+
+            imageio.imwrite(name_hm_maxima_2, im_marked)
+
     def predict_heatmaps_from_images(self, image_stack):
         n_views = self.config['data_loader']['args']['n_views']
         batch_size = self.config['data_loader']['args']['batch_size']
         n_landmarks = self.config['arch']['args']['n_landmarks']
 
+        write_heatmaps = True
         show_result_image = False
         heatmap_maxima = np.zeros((n_landmarks, n_views, 3))
 
@@ -183,6 +215,8 @@ class Predict2D:
                 # output [stack (0 or 1), batch, lm, hm_size, hm_size]
                 heatmaps = output[1, :, :, :, :].cpu()
                 self.find_maxima_in_batch_of_heatmaps(heatmaps, cur_id, heatmap_maxima)
+                if write_heatmaps:
+                    self.write_batch_of_heatmaps(heatmaps, cur_id)
 
             cur_id = cur_id + batch_size
 
