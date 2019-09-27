@@ -2,6 +2,7 @@ import numpy as np
 import vtk
 import os
 
+
 class Utils3D:
     def __init__(self, config):
         self.config = config
@@ -226,7 +227,7 @@ class Utils3D:
         best_error = 100000000  # TODO should find a better initialiser
         best_p = (0, 0, 0)
         dist_thres = 10 * 10  # TODO should find a better way to esimtate dist_thres
-        # d = 10  # TODO d should be set automatically
+        # d = 10  #
         n_lines = len(pa)
         d = n_lines / 3
         used_lines = -1
@@ -327,7 +328,6 @@ class Utils3D:
 
     # Project found landmarks to closest point on the target surface
     def project_landmarks_to_surface(self, mesh_name):
-        # TODO: this should accept more file types
         # obj_in = vtk.vtkOBJReader()
         # obj_in.SetFileName(mesh_name)
         # obj_in.Update()
@@ -417,3 +417,16 @@ class Utils3D:
 
         del writer
         del pd
+
+    @staticmethod
+    def write_landmarks_as_text_external(landmarks, file_name):
+        f = open(file_name, 'w')
+
+        for lm in landmarks:
+            px = lm[0]
+            py = lm[0]
+            pz = lm[0]
+            out_str = str(px) + ' ' + str(py) + ' ' + str(pz) + '\n'
+            f.write(out_str)
+
+        f.close()

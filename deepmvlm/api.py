@@ -99,4 +99,7 @@ class DeepMVLM:
     def write_landmarks_as_vtk_points(landmarks, file_name):
         Utils3D.write_landmarks_as_vtk_points_external(landmarks, file_name)
 
+    @staticmethod
+    def write_landmarks_as_text(landmarks, file_name):
+        Utils3D.write_landmarks_as_text_external(landmarks, file_name)
 

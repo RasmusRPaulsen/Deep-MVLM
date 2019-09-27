@@ -6,10 +6,11 @@ import deepmvlm
 def main(config):
     file_name = 'D:/Data/temp/MartinStandard.obj'
     out_name = 'D:/Data/temp/MartinStandard_landmarks.vtk'
+    out_name_text = 'D:/Data/temp/MartinStandard_landmarks.txt'
 
     dm = deepmvlm.DeepMVLM(config)
     landmarks = dm.predict_one_file(file_name)
-    dm.write_landmarks_as_vtk_points(landmarks, out_name)
+    dm.write_landmarks_as_text(landmarks, out_name)
 
 
 if __name__ == '__main__':
