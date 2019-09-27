@@ -391,3 +391,29 @@ class Utils3D:
 
         del writer
         del pd
+
+    @staticmethod
+    def write_landmarks_as_vtk_points_external(landmarks, file_name):
+        n_landmarks = landmarks.shape[0]
+
+        pd = vtk.vtkPolyData()
+        points = vtk.vtkPoints()
+        verts = vtk.vtkCellArray()
+
+        for lm_no in range(n_landmarks):
+            pid = points.InsertNextPoint(landmarks[lm_no, :])
+            verts.InsertNextCell(1)
+            verts.InsertCellPoint(pid)
+
+        pd.SetPoints(points)
+        del points
+        pd.SetVerts(verts)
+        del verts
+
+        writer = vtk.vtkPolyDataWriter()
+        writer.SetInputData(pd)
+        writer.SetFileName(file_name)
+        writer.Write()
+
+        del writer
+        del pd
