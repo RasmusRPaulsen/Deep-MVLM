@@ -3,12 +3,19 @@ import model.model as module_arch
 from utils3d import Utils3D
 from utils3d import Render3D
 from prediction import Predict2D
+from torch.utils.model_zoo import load_url
 
+models_urls = {
+    'MVLMModel_DTU3D-RGB': 'https://people.compute.dtu.dk/rapa/Deep-MVLM/models/MVLMModel_DTU3D_RGB_07092019-c1cc3d59.pth',
+    'MVLMModel_DTU3D-depth': 'https://people.compute.dtu.dk/rapa/Deep-MVLM/models/MVLMModel_DTU3D_Depth_19092019-ad636c81.pth',
+    'MVLMModel_BU_3DFE-RGB': 'https://people.compute.dtu.dk/rapa/Deep-MVLM/models/MVLMModel_BU_3DFE_RGB_24092019_6epoch-9f242c87.pth',
+}
 
 class DeepMVLM:
     def __init__(self, config):
         self.config = config
-        self.device, self.model = self._get_device_and_load_model()
+        # self.device, self.model = self._get_device_and_load_model()
+        self.device, self.model = self._get_device_and_load_model_from_url()
         self.logger = config.get_logger('predict')
 
     def _prepare_device(self, n_gpu_use):
@@ -29,6 +36,39 @@ class DeepMVLM:
         list_ids = list(range(n_gpu_use))
         return device, list_ids
 
+    def _get_device_and_load_model_from_url(self):
+        logger = self.config.get_logger('test')
+
+        print('Initialising model')
+        model = self.config.initialize('arch', module_arch)
+
+        print('Loading checkpoint')
+        model_dir = self.config['trainer']['save_dir'] + "/trained/"
+        model_name = self.config['name']
+        image_channels = self.config['data_loader']['args']['image_channels']
+        name_channels = model_name + '-' + image_channels
+        check_point_name = models_urls[name_channels]
+
+        print('Getting device')
+        device, device_ids = self._prepare_device(self.config['n_gpu'])
+
+        logger.info('Loading checkpoint: {}'.format(check_point_name))
+
+        checkpoint = load_url(check_point_name, model_dir, map_location=device)
+
+        state_dict = checkpoint['state_dict']
+        if len(device_ids) > 1:
+            model = torch.nn.DataParallel(model, device_ids=device_ids)
+
+        model.load_state_dict(state_dict)
+
+        model = model.to(device)
+        model.eval()
+        return device, model
+
+
+
+
     def _get_device_and_load_model(self):
         logger = self.config.get_logger('test')
 
@@ -38,8 +78,8 @@ class DeepMVLM:
 
         print('Loading checkpoint')
         model_name = self.config['name']
+        image_channels = self.config['data_loader']['args']['image_channels']
         if model_name == "MVLMModel_DTU3D":
-            image_channels = self.config['data_loader']['args']['image_channels']
             if image_channels == "geometry":
                 check_point_name = 'saved/trained/MVLMModel_DTU3D_geometry.pth'
             elif image_channels == "RGB":
@@ -52,7 +92,6 @@ class DeepMVLM:
                 print('No model trained for ', model_name, ' with channels ', image_channels)
                 return None, None
         elif model_name == 'MVLMModel_BU_3DFE':
-            image_channels = self.config['data_loader']['args']['image_channels']
             if image_channels == "RGB":
                 check_point_name = 'saved/trained/MVLMModel_BU_3DFE_RGB_24092019_6epoch.pth'
             else:
@@ -103,3 +142,6 @@ class DeepMVLM:
     def write_landmarks_as_text(landmarks, file_name):
         Utils3D.write_landmarks_as_text_external(landmarks, file_name)
 
+    @staticmethod
+    def visualise_mesh_and_landmarks(mesh_name, landmarks=None):
+        Render3D.visualise_mesh_and_landmarks(mesh_name, landmarks)

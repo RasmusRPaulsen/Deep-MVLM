@@ -1,11 +1,11 @@
 {
-    "name": "MVLMModel_BU_3DFE",
+    "name": "MVLMModel_DTU3D",
     "n_gpu": 1,
 
     "arch": {
         "type": "MVLMModel",
         "args": {
-            "n_landmarks": 84,
+            "n_landmarks": 73,
             "n_features": 256,
             "dropout_rate": 0.2,
             "image_channels": "RGB"
@@ -14,7 +14,7 @@
     "data_loader": {
         "type": "DTU3DDataLoader",
         "args":{
-            "data_dir": "I:/Data/FaceCNN/BU_3DFE_processed/",
+            "data_dir": "I:/Data/FaceCNN/CNNData/",
             "heatmap_size": 256,
             "image_size": 256,
             "image_channels": "RGB",
@@ -49,7 +49,7 @@
 
         "save_dir": "saved/",
         "save_period": 1,
-        "verbosity": 1,
+        "verbosity": 2,
         
         "monitor": "min val_loss",
         "early_stop": 10,
@@ -60,18 +60,18 @@
         "filter_view_lines": "quantile",
         "heatmap_max_quantile": 0.5,
         "heatmap_abs_threshold": 0.5,
-        "write_renderings": true,
+        "write_renderings": false,
         "off_screen_rendering": true,
-        "min_x_angle": -90,
-        "max_x_angle": 20,
+        "min_x_angle": -140,
+        "max_x_angle": -40,
         "min_y_angle": -60,
         "max_y_angle": 60,
         "min_z_angle": -40,
         "max_z_angle": 40
     },
     "preparedata": {
-        "raw_data_dir": "I:/Data/BU_3DFE/",
-        "processed_data_dir": "I:/Data/FaceCNN/BU_3DFE_processed/",
+        "raw_data_dir": "",
+        "processed_data_dir": "",
         "off_screen_rendering": true
     }
 }

@@ -424,8 +424,8 @@ class Utils3D:
 
         for lm in landmarks:
             px = lm[0]
-            py = lm[0]
-            pz = lm[0]
+            py = lm[1]
+            pz = lm[2]
             out_str = str(px) + ' ' + str(py) + ' ' + str(pz) + '\n'
             f.write(out_str)
 

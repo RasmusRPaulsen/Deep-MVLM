@@ -61,6 +61,17 @@
         "heatmap_max_quantile": 0.5,
         "heatmap_abs_threshold": 0.5,
         "write_renderings": false,
+        "off_screen_rendering": true,
+        "min_x_angle": -40,
+        "max_x_angle": 40,
+        "min_y_angle": -80,
+        "max_y_angle": 80,
+        "min_z_angle": -20,
+        "max_z_angle": 20
+    },
+    "preparedata": {
+        "raw_data_dir": "",
+        "processed_data_dir": "",
         "off_screen_rendering": true
     }
 }
