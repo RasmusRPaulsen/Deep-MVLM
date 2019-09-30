@@ -21,7 +21,7 @@ def get_working_device(config):
     return device
 
 
-def get_device_and_load_model(config):
+def get_device_and_load_model_old(config):
     logger = config.get_logger('test')
 
     print('Initialising model')
@@ -53,6 +53,36 @@ def get_device_and_load_model(config):
     else:
         print('No model trained for ', model_name)
         return None, None
+
+    logger.info('Loading checkpoint: {}'.format(check_point_name))
+
+    device = get_working_device(config)
+    checkpoint = torch.load(check_point_name, map_location=device)
+
+    state_dict = checkpoint['state_dict']
+    if config['n_gpu'] > 1 and device == torch.device('cuda'):
+        model = torch.nn.DataParallel(model)
+    model.load_state_dict(state_dict)
+
+    # prepare model for predicting
+    model = model.to(device)
+    model.eval()
+
+    return device, model
+
+
+def get_device_and_load_model(config):
+    logger = config.get_logger('test')
+
+    print('Initialising model')
+    model = config.initialize('arch', module_arch)
+    # logger.info(model)
+
+    if config.resume is None:
+        print('Expecting model to be specified using the --r flag')
+        return  None, None
+
+    check_point_name = str(config.resume)
 
     logger.info('Loading checkpoint: {}'.format(check_point_name))
 
@@ -147,6 +177,7 @@ def write_landmark_accuracy(gt_lm, pred_lm, file):
     print('Average landmark error ', sum_dist / len(gt_lm))
 
 
+# TODO Use render3d version
 def get_landmark_bounds(lms):
     x_min = lms[0][0]
     x_max = x_min
@@ -168,7 +199,7 @@ def get_landmark_bounds(lms):
 
     return x_min, x_max, y_min, y_max, z_min, z_max
 
-
+# TODO Use render3d version
 def get_landmarks_bounding_box_diagonal_length(lms):
     x_min, x_max, y_min, y_max, z_min, z_max = get_landmark_bounds(lms)
 
@@ -177,6 +208,7 @@ def get_landmarks_bounding_box_diagonal_length(lms):
     return diag_len
 
 
+# TODO Move to render3d or utils3D
 def visualise_landmarks_as_spheres_with_accuracy(gt_lm, pred_lm, file_out):
     diag_len = get_landmarks_bounding_box_diagonal_length(gt_lm)
     # sphere radius is 10% of bounding box diagonal

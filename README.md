@@ -56,8 +56,25 @@ To do the training on the pre-rendered images and landmarks the command
 python train --c config_RGB_BU_3DFE.json
 ```
 is used. The result of the training (the model) will be placed in a folder **saved\\models\\MVLMModel_BU_3DFE\\DDMMYY_HHMMSS\\**, where the **saved** folder can be specified in the JSON configuration file. **DDMMYY_HHMMSS** is the current date and time. A simple training log can be found in **saved\\log\\MVLMModel_BU_3DFE\\DDMMYY_HHMMSS\\**.
+After training, it is recommended to rename and copy the best trained model **best-model.pth** to a suitable location. For example **saved\\trained\\*.
+
+#### Resuming training
+If training is stopped for some reason, it is possible to resume training by using
+```
+python train --c config_RGB_BU_3DFE.json --r path-to-model\best-model.pth
+```
+where **path-to-model** is the path to the current best model (for example **saved\\models\\MVLMModel_BU_3DFE\\DDMMYY_HHMMSS\\**).
+
 
 ### Evaluating the model trained on the BU-3DFE data
+In order to evaluate the performance of the trained model, the following command is used:
+```
+python test --c config_RGB_BU_3DFE.json --r path-and-file-name-of-model.pth
+```
+where **path-and-file-name-of-model.pth** is the path and filename of the model that should be tested. It should match the configuration in the supplied JSON file. Test results will be placed in a folder named **saved\\temp\\MVLMModel_BU_3DFE\\DDMMYY_HHMMSS\\**. Most interesting is the **results.csv** that lists the distance error for each landmark for each test mesh.
+
+
+
 
 
 ## Team
