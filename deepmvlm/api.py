@@ -11,6 +11,7 @@ models_urls = {
     'MVLMModel_BU_3DFE-RGB': 'https://people.compute.dtu.dk/rapa/Deep-MVLM/models/MVLMModel_BU_3DFE_RGB_24092019_6epoch-9f242c87.pth',
 }
 
+
 class DeepMVLM:
     def __init__(self, config):
         self.config = config
@@ -65,9 +66,6 @@ class DeepMVLM:
         model = model.to(device)
         model.eval()
         return device, model
-
-
-
 
     def _get_device_and_load_model(self):
         logger = self.config.get_logger('test')
