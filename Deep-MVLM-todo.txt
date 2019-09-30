@@ -5,8 +5,8 @@ FileNotFoundError: [Errno 2] No such file or directory: 'I:/Data/BU_3DFE/M0013\\
 Logging:
  - be stringent in using the logging tool
 
-Testing
- - better max finding (ok)
+
+Change name of DTU3DFaceDataLoader etc. (can also read BU-3DFE)
  
 Training
  - train and evaluate models on DTU-3D
