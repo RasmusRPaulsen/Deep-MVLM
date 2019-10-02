@@ -2,6 +2,9 @@ Check when reading landmarks:
 Update dataset online
 FileNotFoundError: [Errno 2] No such file or directory: 'I:/Data/BU_3DFE/M0013\\M0013_AN04AE_RAW_84_LMS.txt'
 
+When doing resume:
+UnboundLocalError: local variable 'not_improved_count' referenced before assignment
+
 Logging:
  - be stringent in using the logging tool
 
