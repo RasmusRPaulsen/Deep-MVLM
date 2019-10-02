@@ -1,4 +1,7 @@
 import argparse
+import datetime
+import time
+
 import torch
 import model.model as module_arch
 from parse_config import ConfigParser
@@ -47,6 +50,8 @@ def get_device_and_load_model_old(config):
         image_channels = config['data_loader']['args']['image_channels']
         if image_channels == "RGB":
             check_point_name = 'saved/trained/MVLMModel_BU_3DFE_RGB_24092019_6epoch.pth'
+        elif image_channels == "geometry":
+            check_point_name = 'saved/trained/MVLMModel_BU_3DFE_geometry_02102019_4epoch.pth'
         else:
             print('No model trained for ', model_name, ' with channels ', image_channels)
             return None, None
@@ -328,6 +333,7 @@ def test_on_bu_3d_fe(config):
 
     idx = 0
     res_f = open(result_file, "w")
+    start_time = time.time()
     for f_name in files:
         lm_name = bu_3dfe_dir + f_name + '_RAW_84_LMS.txt'
         wrl_name = bu_3dfe_dir + f_name + '_RAW.wrl'
@@ -362,6 +368,9 @@ def test_on_bu_3d_fe(config):
             sphere_file = config.temp_dir / (base_name + '_landmarkAccuracy.vtk')
             visualise_landmarks_as_spheres_with_accuracy(gt_lms, pred_lms, str(sphere_file))
             idx = idx + 1
+            time_per_test = (time.time()-start_time) / idx
+            time_left = (len(files) - idx) * time_per_test
+            print('Time left in test: ', str(datetime.timedelta(seconds=time_left)))
         else:
             print('File', wrl_name, ' does not exists')
 

@@ -667,7 +667,7 @@ class Render3D:
         del ren, ren_win, t
         return image_stack
 
-    def render_3d_wrl_rgb(self, transform_stack, file_name, texture_file_name=None):
+    def render_3d_wrl_rgb_geometry_depth(self, transform_stack, file_name, texture_file_name=None):
         write_image_files = self.config['process_3d']['write_renderings']
         off_screen_rendering = self.config['process_3d']['off_screen_rendering']
         n_views = self.config['data_loader']['args']['n_views']
@@ -885,20 +885,25 @@ class Render3D:
         n_views = self.config['data_loader']['args']['n_views']
         win_size = self.config['data_loader']['args']['image_size']
 
-        # TODO Check if geometry should also be divided by 255
         if file_type == ".obj" and image_channels == "RGB":
             transformation_stack = self.generate_3d_transformations()
             image_stack = self.render_3d_obj_rgb(transformation_stack, file_name)
             image_stack = image_stack / 255
         elif file_type == ".wrl" and image_channels == "RGB":
             transformation_stack = self.generate_3d_transformations()
-            image_stack_full = self.render_3d_wrl_rgb(transformation_stack, file_name, texture_file_name)
+            image_stack_full = self.render_3d_wrl_rgb_geometry_depth(transformation_stack, file_name, texture_file_name)
             n_channels = 3
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:3] = image_stack_full[:, :, :, 0:3] / 255
+        elif file_type == ".wrl" and image_channels == "geometry":
+            transformation_stack = self.generate_3d_transformations()
+            image_stack_full = self.render_3d_wrl_rgb_geometry_depth(transformation_stack, file_name, texture_file_name)
+            n_channels = 1
+            image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
+            image_stack[:, :, :, 0:1] = image_stack_full[:, :, :, 3:4] / 255
         elif file_type == ".obj" and image_channels == "geometry":
             transformation_stack = self.generate_3d_transformations()
-            image_stack = self.render_3d_obj_geometry(transformation_stack, file_name)
+            image_stack = self.render_3d_obj_geometry(transformation_stack, file_name) / 255
         elif file_type == ".obj" and image_channels == "depth":
             transformation_stack = self.generate_3d_transformations()
             image_stack = self.render_3d_obj_depth(transformation_stack, file_name) / 255
@@ -916,7 +921,7 @@ class Render3D:
             image_stack_depth = self.render_3d_obj_depth(transformation_stack, file_name)
             n_channels = 2
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
-            image_stack[:, :, :, 0:1] = image_stack_geometry
+            image_stack[:, :, :, 0:1] = image_stack_geometry / 255
             image_stack[:, :, :, 1:2] = image_stack_depth / 255
         else:
             print("Can not render filetype ", file_type, " using image_channels ", image_channels)
