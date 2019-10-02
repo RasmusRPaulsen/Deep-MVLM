@@ -28,10 +28,9 @@ The type of 3D rendering used is specified in the **image_channels** setting. Th
 
 ### Using Multiple GPUs
 
-Multi-GPU training and evaluation can be used by setting `n_gpu` argument of the config file to a number greater than one 
-If configured to use a smaller number of GPUs than available, n devices will be used by default. To use a specific set of GPUs the command line option **--device** can be used:
+Multi-GPU training and evaluation can be used by setting `n_gpu` argument of the config file to a number greater than one. If configured to use a smaller number of GPUs than available, n devices will be used by default. To use a specific set of GPUs the command line option **--device** can be used:
 ```
-python train.py --device 2,3 -c config.json
+python train.py --device 2,3 --c config.json
 ```
 The program check if a GPU is present and if it has the required CUDA capabilities (3.5 and up). If not, the CPU is used - will be slow but still works.
 
