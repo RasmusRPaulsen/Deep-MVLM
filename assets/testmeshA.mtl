@@ -1,0 +1,7 @@
+newmtl material0
+newmtl material1
+map_Kd testmeshA1.jpg
+newmtl material2
+map_Kd testmeshA2.jpg
+newmtl material3
+map_Kd testmeshA3.jpg

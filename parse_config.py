@@ -14,20 +14,31 @@ class ConfigParser:
         for opt in options:
             args.add_argument(*opt.flags, default=None, type=opt.type)
         args = args.parse_args()
+        self._name = None
 
-        if args.device:
-            os.environ["CUDA_VISIBLE_DEVICES"] = args.device
-        if args.resume:
-            self.resume = Path(args.resume)
-            if args.config is not None:
+        if hasattr(args, 'device'):
+            if args.device:
+                os.environ["CUDA_VISIBLE_DEVICES"] = args.device
+
+        self.cfg_fname = None
+        if hasattr(args, 'resume'):
+            if args.resume:
+                self.resume = Path(args.resume)
+                if hasattr(args, 'config') and args.config is not None:
+                    self.cfg_fname = Path(args.config)
+                else:
+                    self.cfg_fname = self.resume.parent / 'config.json'
+
+        if self.cfg_fname is None:
+            if hasattr(args, 'config'):
+                msg_no_cfg = "Configuration file need to be specified. Add '-c config.json', for example."
+                assert args.config is not None, msg_no_cfg
+                self.resume = None
                 self.cfg_fname = Path(args.config)
-            else:
-                self.cfg_fname = self.resume.parent / 'config.json'
-        else:
-            msg_no_cfg = "Configuration file need to be specified. Add '-c config.json', for example."
-            assert args.config is not None, msg_no_cfg
-            self.resume = None
-            self.cfg_fname = Path(args.config)
+
+        if hasattr(args, 'name'):
+            if args.name:
+                self._name = str(args.name)
 
         # load config file and apply custom cli options
         config = read_json(self.cfg_fname)
@@ -95,6 +106,9 @@ class ConfigParser:
     def temp_dir(self):
         return self._temp_dir
 
+    @property
+    def name(self):
+        return self._name
 
 # helper functions used to update config dict with custom cli options
 def _update_config(config, options, args):
