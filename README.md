@@ -25,6 +25,16 @@ The type of 3D rendering used is specified in the **image_channels** setting. Th
 - **RGB+depth** texture plus depth rendering (3+1=4 image channels)
 - **geometry+depth** geometry plus depth rendering (1+1=2 image channels)
 
+
+### Using Multiple GPUs
+
+Multi-GPU training and evaluation can be used by setting `n_gpu` argument of the config file to a number greater than one 
+If configured to use a smaller number of GPUs than available, n devices will be used by default. To use a specific set of GPUs the command line option **--device** can be used:
+```
+python train.py --device 2,3 -c config.json
+```
+The program check if a GPU is present and if it has the required CUDA capabilities (3.5 and up). If not, the CPU is used - will be slow but still works.
+
 ## How to use Deep-MVLM with the BU-3DFE dataset
 
 The Binghamton University 3D Facial Expression Database (BU-3DFE) is a standard database for testing the performance of 3D facial analysis software tools. Here it is described how this database can be used to train and evaluate the performance of Deep-MVLM. The following approach can be adapted to your own dataset.
