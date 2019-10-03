@@ -961,8 +961,8 @@ class Render3D:
     @staticmethod
     def get_landmarks_as_spheres(lms):
         diag_len = Render3D.get_landmarks_bounding_box_diagonal_length(lms)
-        # sphere radius is 5% of bounding box diagonal
-        sphere_size = diag_len * 0.005
+        # sphere radius is 0.8% of bounding box diagonal
+        sphere_size = diag_len * 0.008
 
         append = vtk.vtkAppendPolyData()
         for idx in range(len(lms)):
