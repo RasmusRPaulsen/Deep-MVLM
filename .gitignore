@@ -114,3 +114,6 @@ datasets/
 .vscode/
 .idea/
 __MACOSX/
+
+# Rasmus stuff
+*_RAPADEBUG*
