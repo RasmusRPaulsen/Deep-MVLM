@@ -430,3 +430,14 @@ class Utils3D:
             f.write(out_str)
 
         f.close()
+
+    @staticmethod
+    def get_mesh_files_in_dir(directory):
+        names = []
+        for root, dirs, files in os.walk(directory):
+            for filename in files:
+                if filename.lower().endswith(('.obj', '.wrl', '.vtk', '.ply', '.stl')):
+                    full_name = os.path.join(root, filename)
+                    if os.path.isfile(full_name) and os.stat(full_name).st_size > 5:
+                        names.append(full_name)
+        return names

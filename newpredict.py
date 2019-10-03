@@ -1,10 +1,13 @@
 import argparse
 from parse_config import ConfigParser
 import deepmvlm
+from utils3d import Utils3D
 import os
 
 
 def main(config):
+    directory = 'D:/Data/temp/'
+    names = Utils3D.get_mesh_files_in_dir(directory)
     # file_name = 'D:/Data/temp/MartinStandard.obj'
     # out_name = 'D:/Data/temp/MartinStandard_landmarks.vtk'
     # out_name_text = 'D:/Data/temp/MartinStandard_landmarks.txt'
