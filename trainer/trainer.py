@@ -56,12 +56,10 @@ class Trainer(BaseTrainer):
         """
         self.model.train()
 
-        sum_time = 0
-        t_count = 0
         total_loss = 0
-        total_metrics = np.zeros(len(self.metrics))
+        # total_metrics = np.zeros(len(self.metrics))
+        start_time = time.time()
         for batch_idx, sample_batched in enumerate(self.data_loader):
-            start = time.time()
             data, target = sample_batched['image'], sample_batched['heat_map_stack']
             # TODO: This transform should probably not be done here
             data = data.permute(0, 3, 1, 2)  # from NHWC to NCHW
@@ -77,9 +75,6 @@ class Trainer(BaseTrainer):
             output = output.permute(1, 0, 2, 3, 4)
             target = target.permute(0, 1, 4, 2, 3)
 
-            # TODO: Figure out and clean up these conversions
-            # output = output.to(torch.float)
-
             loss = self.loss(output, target)
             loss.backward()
             self.optimizer.step()
@@ -91,16 +86,15 @@ class Trainer(BaseTrainer):
             # TODO: Compute custom metrics (Landmark distances etc)
             # total_metrics += self._eval_metrics(output, target)
 
-            end = time.time()
-            sum_time = sum_time + end - start
-            t_count = t_count + 1
-            time_left = (self.len_epoch - batch_idx) * sum_time / t_count
+            time_per_test = (time.time() - start_time) / (batch_idx + 1)
+            time_left = (self.len_epoch - batch_idx) * time_per_test
+
             if batch_idx % self.log_step == 0:
                 self.logger.debug('Train Epoch: {} {} Loss: {:.6f} Time per batch: {:.5} Time left in epoch: {}'.format(
                     epoch,
                     self._progress(batch_idx),
                     loss.item(),
-                    sum_time / t_count,
+                    time_per_test,
                     str(datetime.timedelta(seconds=time_left))))
                 # self.writer.add_image('input', make_grid(data.cpu(), nrow=8, normalize=True))
             if batch_idx == self.len_epoch:
@@ -135,6 +129,8 @@ class Trainer(BaseTrainer):
         self.model.eval()
         total_val_loss = 0
         total_val_metrics = np.zeros(len(self.metrics))
+        n_validation = len(self.valid_data_loader)
+        start_time = time.time()
         with torch.no_grad():
             for batch_idx, sample_batched in enumerate(self.valid_data_loader):
                 data, target = sample_batched['image'], sample_batched['heat_map_stack']
@@ -152,13 +148,26 @@ class Trainer(BaseTrainer):
                 target = target.permute(0, 1, 4, 2, 3)
 
                 # TODO: Figure out and clean up these conversions
-                output = output.to(torch.float)
+                # output = output.to(torch.float)
 
                 loss = self.loss(output, target)
 
                 self.writer.set_step((epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')
                 self.writer.add_scalar('loss', loss.item())
                 total_val_loss += loss.item()
+
+                time_per_test = (time.time() - start_time) / (batch_idx + 1)
+                time_left = (n_validation - batch_idx) * time_per_test
+
+                if batch_idx % self.log_step == 0:
+                    self.logger.debug(
+                        'Validation: {}/{} Loss: {:.6f} Time per batch: {:.5} Time left in validation: {}'.format(
+                            batch_idx,
+                            n_validation,
+                            loss,
+                            time_per_test,
+                            str(datetime.timedelta(seconds=time_left))))
+
                 # total_val_metrics += self._eval_metrics(output, target)  # TODO: Add custom metrics
                 # self.writer.add_image('input', make_grid(data.cpu(), nrow=8, normalize=True))
 
