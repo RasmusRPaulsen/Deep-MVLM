@@ -29,7 +29,7 @@ The easiset way to use Deep-MVLM is to use the pre-trained models to place landm
 ```
 python predict.py --c configs/DTU3D-RGB.json --n assets/testmeshA.obj
 ```
-This should create to landmarks files (a .vtk file and a .txt) file in the assets directory and also show a window with a face mesh with landmarks as (its a 3D rendering that can be manipulated with the mouse):
+This should create two landmarks files (a .vtk file and a .txt) file in the assets directory and also show a window with a face mesh with landmarks as (its a 3D rendering that can be manipulated with the mouse):
 
 ![Predicted output](art/PredictWindow.png)
 
