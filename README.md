@@ -1,5 +1,7 @@
 # Deep learning based 3D landmark placement
-A tool for precisely placing 3D landmarks on 3D facial scans
+A tool for precisely placing 3D landmarks on 3D facial scans based on the paper **Multi-view Consensus CNN for 3D Facial Landmark Placement**.
+
+![Overview](art/CompleteFlow2.png)
 
 ## Citing Deep-MVLM
 
@@ -16,7 +18,21 @@ If you use Deep-MVLM in your research, please cite the
 }
 ```
 
-## How to use Deep-MVLM
+## Getting Deep-MVLM
+
+### Requriements
+
+
+## Getting started
+The easiset way to use Deep-MVLM is to use the pre-trained models to place landmarks on your meshes. To place the DTU-3D landmarks on a mesh try:
+
+```
+python predict.py --c configs/DTU3D-RGB.json --n assets/testmeshA.obj
+```
+This should create to landmarks files (a .vtk file and a .txt) file in the assets directory and also show a window with a face mesh with landmarks as:
+
+
+
 ### Rendering types
 The type of 3D rendering used is specified in the **image_channels** setting. The options are:
 - **geometry** pure geometry rendering without texture (1 image channel)

@@ -16,8 +16,8 @@ class DeepMVLM:
     def __init__(self, config):
         self.config = config
         # self.device, self.model = self._get_device_and_load_model()
-        self.device, self.model = self._get_device_and_load_model_from_url()
         self.logger = config.get_logger('predict')
+        self.device, self.model = self._get_device_and_load_model_from_url()
 
     def _prepare_device(self, n_gpu_use):
         n_gpu = torch.cuda.device_count()
