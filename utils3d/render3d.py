@@ -901,6 +901,13 @@ class Render3D:
             n_channels = 1
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:1] = image_stack_full[:, :, :, 3:4] / 255
+        elif file_type == ".wrl" and image_channels == "RGB+depth":
+            transformation_stack = self.generate_3d_transformations()
+            image_stack_full = self.render_3d_wrl_rgb_geometry_depth(transformation_stack, file_name, texture_file_name)
+            n_channels = 4
+            image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
+            image_stack[:, :, :, 0:3] = image_stack_full[:, :, :, 0:3] / 255
+            image_stack[:, :, :, 3:4] = image_stack_full[:, :, :, 4:5] / 255
         elif file_type == ".obj" and image_channels == "geometry":
             transformation_stack = self.generate_3d_transformations()
             image_stack = self.render_3d_obj_geometry(transformation_stack, file_name) / 255
@@ -1002,6 +1009,30 @@ class Render3D:
         ren = vtk.vtkRenderer()
         ren.SetBackground(1, 1, 1)
 
+        win_size = 512
+
+        # Initialize RenderWindow
+        ren_win = vtk.vtkRenderWindow()
+        ren_win.AddRenderer(ren)
+        ren_win.SetSize(win_size, win_size)
+
+        obj_in.SetRenderWindow(ren_win)
+        obj_in.Update()
+
+        props = vtk.vtkProperty()
+        props.SetColor(1, 1, 1)
+        props.SetDiffuse(0)
+        props.SetSpecular(0)
+        props.SetAmbient(1)
+
+        actors = ren.GetActors()
+        actors.InitTraversal()
+        actor = actors.GetNextItem()
+        while actor:
+            actor.SetProperty(props)
+            actor = actors.GetNextItem()
+        del props
+
         if landmarks is not None:
             lm_pd = Render3D.get_landmarks_as_spheres(landmarks)
 
@@ -1018,19 +1049,10 @@ class Render3D:
         # ren.GetActiveCamera().SetViewUp(0, 1, 0)
         # ren.GetActiveCamera().SetParallelProjection(1)
 
-        win_size = 512
-
-        # Initialize RenderWindow
-        ren_win = vtk.vtkRenderWindow()
-        ren_win.AddRenderer(ren)
-        ren_win.SetSize(win_size, win_size)
-
         iren = vtk.vtkRenderWindowInteractor()
         style = vtk.vtkInteractorStyleTrackballCamera()
         iren.SetInteractorStyle(style)
         iren.SetRenderWindow(ren_win)
-        obj_in.SetRenderWindow(ren_win)
-        obj_in.Update()
 
         ren_win.Render()
         iren.Start()
