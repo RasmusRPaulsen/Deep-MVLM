@@ -1,4 +1,6 @@
 import time
+
+import imageio
 import numpy as np
 import torch
 # from torchvision.utils import make_grid
@@ -61,6 +63,14 @@ class Trainer(BaseTrainer):
         start_time = time.time()
         for batch_idx, sample_batched in enumerate(self.data_loader):
             data, target = sample_batched['image'], sample_batched['heat_map_stack']
+
+            # TODO: Debug to check heatmap
+            # lm_no = 26
+            # name_hm_maxima = self.config.temp_dir / ('hm_maxima' + str(batch_idx) + '_LM_' + str(lm_no) + '.png')
+            # hm_debug = target[0, 0, :, :, lm_no]
+            # hm_debug = hm_debug.numpy()
+            # imageio.imwrite(name_hm_maxima, hm_debug)
+
             # TODO: This transform should probably not be done here
             data = data.permute(0, 3, 1, 2)  # from NHWC to NCHW
 

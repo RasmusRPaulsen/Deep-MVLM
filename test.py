@@ -355,7 +355,7 @@ def test_on_bu_3d_fe(config):
             u3d.transformations_3d = transform_stack
             u3d.compute_lines_from_heatmap_maxima()
             # u3d.visualise_one_landmark_lines(83)
-            # u3d.visualise_one_landmark_lines(32)
+            # u3d.visualise_one_landmark_lines(26)
             u3d.compute_all_landmarks_from_view_lines()
             u3d.project_landmarks_to_surface(wrl_name)
             pred_lms = u3d.landmarks

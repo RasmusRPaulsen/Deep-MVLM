@@ -79,6 +79,13 @@ class Predict2D:
                 px = coordinates[lm_no][0]
                 py = coordinates[lm_no][1]
                 value = coordinates[lm_no][2]
+                if value > 1.2:  # TODO debug - really bad hack due to weird max in heatmaps
+                    print("Found heatmap with value > 1.2 LM {} value {} pos {} {}  ".format(lm_no, value, px, py))
+                    value = 0
+                # if lm_no == 0:
+                # print('LM value and pos', lm_no, value, px, py)
+                # name_hm_maxima = self.config.temp_dir / ('hm_maxima' + str(cur_id + idx) + '_LM_' + str(lm_no) + '.png')
+                # imageio.imwrite(name_hm_maxima, heatmaps[idx, lm_no, :, :])
                 heatmap_maxima[lm_no, cur_id + idx, :] = (px, py, value)
                 if write_heatmaps:
                     out_str = str(px) + ' ' + str(py) + ' ' + str(value) + '\n'
