@@ -1,0 +1,19 @@
+1; En (L); Left endocanthion (inner eye corner)
+2; Eu (L); left eye upper border
+3; Eu (L); left eye upper border
+4; Eu (L); left eye upper border
+5; Ex (L); left exocanthion (outer eye corner)
+6; El (L); left eye lower border
+7; El (L); left eye lower border
+8; El (L); left eye lower border
+9; En (R); right endocanthion (inner eye corner)
+13; Ex (R); right exocanthion (outer eye corner)
+40; Ac (L); left alar crest point (nose corner)
+43; Sn; Subnasale
+45; Ac (R); right alar crest point (nose corner)
+49; Ch (L); left cheilion (mouth corner)
+52; Ls; labiale superius (upper lip)
+55; Ch (R); right cheilion (mouth corner)
+58; Li; labiale inferius (lower lip)
+76; Po; Pogonion (chin)
+84; Nt; Pronasale (nose tip)

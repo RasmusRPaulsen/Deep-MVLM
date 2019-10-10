@@ -311,7 +311,8 @@ class Utils3D:
             self.landmarks[lm_no, :] = p_intersect
         print("Ransac average error ", sum_error/n_landmarks)
 
-    def multi_read_surface(self, file_name):
+    @staticmethod
+    def multi_read_surface(file_name):
         clean_name, file_extension = os.path.splitext(file_name)
         if file_extension == ".obj":
             obj_in = vtk.vtkOBJReader()
@@ -325,6 +326,27 @@ class Utils3D:
             vrmlin.Update()
             pd = vrmlin.GetRenderer().GetActors().GetLastActor().GetMapper().GetInput()
             return pd
+        elif file_extension == ".vtk":
+            pd_in = vtk.vtkPolyDataReader()
+            pd_in.SetFileName(file_name)
+            pd_in.Update()
+            pd = pd_in.GetOutput()
+            return pd
+        elif file_extension == ".stl":
+            pd_in = vtk.vtkSTLReader()
+            pd_in.SetFileName(file_name)
+            pd_in.Update()
+            pd = pd_in.GetOutput()
+            return pd
+        elif file_extension == ".ply":
+            pd_in = vtk.vtkSTLReader()
+            pd_in.SetFileName(file_name)
+            pd_in.Update()
+            pd = pd_in.GetOutput()
+            return pd
+        else:
+            print("Can not read files with extenstion", file_extension)
+            return None
 
     # Project found landmarks to closest point on the target surface
     def project_landmarks_to_surface(self, mesh_name):

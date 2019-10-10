@@ -1,3 +1,5 @@
+conda create -n pytorch1.2
+conda activate pytorch1.2
 conda install pytorch torchvision cudatoolkit=10.0 -c pytorch
 conda install -c anaconda vtk
 conda install -c conda-forge libnetcdf=4.7.1
