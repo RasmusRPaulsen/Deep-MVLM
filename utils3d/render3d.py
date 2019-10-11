@@ -1111,7 +1111,9 @@ class Render3D:
             actor_text.SetVisibility(True)
             ren.Modified()
 
-        del writer_png_2, writer_png, ren_win, actor_geometry, actor_text, mapper, w2if, t, trans, texture
+        del writer_png_2, writer_png, ren_win, actor_geometry, actor_text, mapper, w2if, t, trans
+        if texture_file_name is not None:
+            del texture
         # del texture_image
         return image_stack
 
