@@ -1148,6 +1148,13 @@ class Render3D:
             n_channels = 1
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:1] = image_stack_full[:, :, :, 4:5] / 255
+       elif file_type == ".wrl" and image_channels == "geometry+depth":
+            transformation_stack = self.generate_3d_transformations()
+            image_stack_full = self.render_3d_wrl_rgb_geometry_depth(transformation_stack, file_name, texture_file_name)
+            n_channels = 2
+            image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
+            image_stack[:, :, :, 0:1] = image_stack_full[:, :, :, 3:4] / 255
+            image_stack[:, :, :, 1:2] = image_stack_full[:, :, :, 4:5] / 255
         elif file_type == ".wrl" and image_channels == "RGB+depth":
             transformation_stack = self.generate_3d_transformations()
             image_stack_full = self.render_3d_wrl_rgb_geometry_depth(transformation_stack, file_name, texture_file_name)
