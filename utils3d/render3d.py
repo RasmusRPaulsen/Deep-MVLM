@@ -687,32 +687,40 @@ class Render3D:
         pd = vrmlin.GetRenderer().GetActors().GetLastActor().GetMapper().GetInput()
         pd.GetPointData().SetScalars(None)
 
-        # check for texture files
-        if texture_file_name is None:
-            img_texture = os.path.splitext(file_name)[0] + ".bmp"
-            if os.path.isfile(img_texture):
-                texture_file_name = img_texture
-            img_texture = os.path.splitext(file_name)[0] + ".png"
-            if os.path.isfile(img_texture):
-                texture_file_name = img_texture
-            img_texture = os.path.splitext(file_name)[0] + ".jpg"
-            if os.path.isfile(img_texture):
-                texture_file_name = img_texture
-            img_texture = file_name.replace('RAW.wrl', 'F3D.bmp')  # BU-3DFE RAW file hack
-            if os.path.isfile(img_texture):
-                texture_file_name = img_texture
-
-        # Load texture
-        if texture_file_name is not None:
-            texture_image = vtk.vtkBMPReader()
-            texture_image.SetFileName(texture_file_name)
-            texture_image.Update()
-
+        texture_img = Utils3D.multi_read_texture(file_name)
+        if texture_img is not None:
             texture = vtk.vtkTexture()
             texture.SetInterpolate(1)
             texture.SetQualityTo32Bit()
-            texture.SetInputConnection(texture_image.GetOutputPort())
-            del texture_image
+            texture.SetInputData(texture_img)
+            del texture_img
+
+        # check for texture files
+        # if texture_file_name is None:
+        #    img_texture = os.path.splitext(file_name)[0] + ".bmp"
+        #    if os.path.isfile(img_texture):
+        #        texture_file_name = img_texture
+        #    img_texture = os.path.splitext(file_name)[0] + ".png"
+        #    if os.path.isfile(img_texture):
+        #        texture_file_name = img_texture
+        #    img_texture = os.path.splitext(file_name)[0] + ".jpg"
+        #    if os.path.isfile(img_texture):
+        #        texture_file_name = img_texture
+        #    img_texture = file_name.replace('RAW.wrl', 'F3D.bmp')  # BU-3DFE RAW file hack
+        #    if os.path.isfile(img_texture):
+        #        texture_file_name = img_texture
+
+        # Load texture
+        # if texture_file_name is not None:
+        #   texture_image = vtk.vtkBMPReader()
+        #    texture_image.SetFileName(texture_file_name)
+        #    texture_image.Update()
+
+        #   texture = vtk.vtkTexture()
+        #   texture.SetInterpolate(1)
+        #    texture.SetQualityTo32Bit()
+        #    texture.SetInputConnection(texture_image.GetOutputPort())
+        #    del texture_image
 
         # Initialize Camera
         ren = vtk.vtkRenderer()
@@ -744,7 +752,7 @@ class Render3D:
 
         actor_text = vtk.vtkActor()
         actor_text.SetMapper(mapper)
-        if texture_file_name is not None:
+        if texture_img is not None:
             actor_text.SetTexture(texture)
         actor_text.GetProperty().SetColor(1, 1, 1)
         actor_text.GetProperty().SetAmbient(1.0)
@@ -890,7 +898,7 @@ class Render3D:
             ren.Modified()
 
         del writer_png_2, writer_png, ren_win, actor_geometry, actor_text, mapper, w2if, t, trans, vrmlin
-        if texture_file_name is not None:
+        if texture_img is not None:
             del texture
         # del texture_image
         return image_stack
@@ -911,30 +919,39 @@ class Render3D:
             print('Could not read', file_name)
             return None
 
-        # check for texture files
-        if texture_file_name is None:
-            img_texture = os.path.splitext(file_name)[0] + ".bmp"
-            if os.path.isfile(img_texture):
-                texture_file_name = img_texture
-            img_texture = os.path.splitext(file_name)[0] + ".png"
-            if os.path.isfile(img_texture):
-                texture_file_name = img_texture
-            img_texture = os.path.splitext(file_name)[0] + ".jpg"
-            if os.path.isfile(img_texture):
-                texture_file_name = img_texture
-
-        # Load texture
-        if texture_file_name is not None:
-            pd.GetPointData().SetScalars(None)  # not scalar vertex coloring
-            texture_image = vtk.vtkBMPReader()
-            texture_image.SetFileName(texture_file_name)
-            texture_image.Update()
-
+        texture_img = Utils3D.multi_read_texture(file_name)
+        if texture_img is not None:
             texture = vtk.vtkTexture()
             texture.SetInterpolate(1)
             texture.SetQualityTo32Bit()
-            texture.SetInputConnection(texture_image.GetOutputPort())
-            del texture_image
+            texture.SetInputData(texture_img)
+            del texture_img
+
+
+        # check for texture files
+        # if texture_file_name is None:
+        #    img_texture = os.path.splitext(file_name)[0] + ".bmp"
+        #    if os.path.isfile(img_texture):
+        #        texture_file_name = img_texture
+        #    img_texture = os.path.splitext(file_name)[0] + ".png"
+        #    if os.path.isfile(img_texture):
+        #        texture_file_name = img_texture
+        #    img_texture = os.path.splitext(file_name)[0] + ".jpg"
+        #    if os.path.isfile(img_texture):
+        #        texture_file_name = img_texture
+
+        # Load texture
+        # if texture_file_name is not None:
+        #    pd.GetPointData().SetScalars(None)  # not scalar vertex coloring
+        #    texture_image = vtk.vtkBMPReader()
+        #    texture_image.SetFileName(texture_file_name)
+        #    texture_image.Update()
+
+        #    texture = vtk.vtkTexture()
+        #    texture.SetInterpolate(1)
+        #    texture.SetQualityTo32Bit()
+        #    texture.SetInputConnection(texture_image.GetOutputPort())
+        #    del texture_image
 
         # Initialize Camera
         ren = vtk.vtkRenderer()
@@ -1112,7 +1129,7 @@ class Render3D:
             ren.Modified()
 
         del writer_png_2, writer_png, ren_win, actor_geometry, actor_text, mapper, w2if, t, trans
-        if texture_file_name is not None:
+        if texture_img is not None:
             del texture
         # del texture_image
         return image_stack
@@ -1148,7 +1165,7 @@ class Render3D:
             n_channels = 1
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:1] = image_stack_full[:, :, :, 4:5] / 255
-       elif file_type == ".wrl" and image_channels == "geometry+depth":
+        elif file_type == ".wrl" and image_channels == "geometry+depth":
             transformation_stack = self.generate_3d_transformations()
             image_stack_full = self.render_3d_wrl_rgb_geometry_depth(transformation_stack, file_name, texture_file_name)
             n_channels = 2
@@ -1332,33 +1349,41 @@ class Render3D:
                 print('Could not read', mesh_name)
                 return None
 
-            # check for texture files
-            if texture_file_name is None:
-                img_texture = os.path.splitext(mesh_name)[0] + ".bmp"
-                if os.path.isfile(img_texture):
-                    texture_file_name = img_texture
-                img_texture = os.path.splitext(mesh_name)[0] + ".png"
-                if os.path.isfile(img_texture):
-                    texture_file_name = img_texture
-                img_texture = os.path.splitext(mesh_name)[0] + ".jpg"
-                if os.path.isfile(img_texture):
-                    texture_file_name = img_texture
-                img_texture = mesh_name.replace('RAW.wrl', 'F3D.bmp')  # BU-3DFE RAW file hack
-                if os.path.isfile(img_texture):
-                    texture_file_name = img_texture
-
-            # Load texture
-            if texture_file_name is not None:
-                pd.GetPointData().SetScalars(None)  # not scalar vertex coloring
-                texture_image = vtk.vtkBMPReader()
-                texture_image.SetFileName(texture_file_name)
-                texture_image.Update()
-
+            texture_img = Utils3D.multi_read_texture(mesh_name)
+            if texture_img is not None:
                 texture = vtk.vtkTexture()
                 texture.SetInterpolate(1)
                 texture.SetQualityTo32Bit()
-                texture.SetInputConnection(texture_image.GetOutputPort())
-                del texture_image
+                texture.SetInputData(texture_img)
+                del texture_img
+
+            # check for texture files
+            # if texture_file_name is None:
+            #   img_texture = os.path.splitext(mesh_name)[0] + ".bmp"
+            #    if os.path.isfile(img_texture):
+            #       texture_file_name = img_texture
+            #   img_texture = os.path.splitext(mesh_name)[0] + ".png"
+            #    if os.path.isfile(img_texture):
+            #       texture_file_name = img_texture
+            #    img_texture = os.path.splitext(mesh_name)[0] + ".jpg"
+            #    if os.path.isfile(img_texture):
+            #        texture_file_name = img_texture
+            #    img_texture = mesh_name.replace('RAW.wrl', 'F3D.bmp')  # BU-3DFE RAW file hack
+            #    if os.path.isfile(img_texture):
+            #        texture_file_name = img_texture
+
+            # Load texture
+            # if texture_file_name is not None:
+            #   pd.GetPointData().SetScalars(None)  # not scalar vertex coloring
+            #    texture_image = vtk.vtkBMPReader()
+            #    texture_image.SetFileName(texture_file_name)
+            #    texture_image.Update()
+
+            #    texture = vtk.vtkTexture()
+            #    texture.SetInterpolate(1)
+            #    texture.SetQualityTo32Bit()
+            #    texture.SetInputConnection(texture_image.GetOutputPort())
+            #    del texture_image
 
             mapper = vtk.vtkPolyDataMapper()
             mapper.SetInputData(pd)

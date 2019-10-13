@@ -348,6 +348,44 @@ class Utils3D:
             print("Can not read files with extenstion", file_extension)
             return None
 
+    @staticmethod
+    def multi_read_texture(file_name, texture_file_name=None):
+        if texture_file_name is None:
+            img_texture = os.path.splitext(file_name)[0] + ".bmp"
+            if os.path.isfile(img_texture):
+                texture_file_name = img_texture
+            img_texture = os.path.splitext(file_name)[0] + ".png"
+            if os.path.isfile(img_texture):
+                texture_file_name = img_texture
+            img_texture = os.path.splitext(file_name)[0] + ".jpg"
+            if os.path.isfile(img_texture):
+                texture_file_name = img_texture
+            if file_name.find('RAW.wrl') > 0:
+                img_texture = file_name.replace('RAW.wrl', 'F3D.bmp')  # BU-3DFE RAW file hack
+                if os.path.isfile(img_texture):
+                    texture_file_name = img_texture
+
+        # Load texture
+        if texture_file_name is not None:
+            clean_name, file_extension = os.path.splitext(texture_file_name)
+            if file_extension == ".bmp":
+                texture_image = vtk.vtkBMPReader()
+                texture_image.SetFileName(texture_file_name)
+                texture_image.Update()
+                return texture_image.GetOutput()
+            elif file_extension == ".png":
+                texture_image = vtk.vtkPNGReader()
+                texture_image.SetFileName(texture_file_name)
+                texture_image.Update()
+                return texture_image.GetOutput()
+            elif file_extension == ".jpg":
+                texture_image = vtk.vtkJPGReader()
+                texture_image.SetFileName(texture_file_name)
+                texture_image.Update()
+                return texture_image.GetOutput()
+
+        return None
+
     # Project found landmarks to closest point on the target surface
     def project_landmarks_to_surface(self, mesh_name):
         # obj_in = vtk.vtkOBJReader()
