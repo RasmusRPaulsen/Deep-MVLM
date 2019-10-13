@@ -47,7 +47,7 @@
     "trainer": {
         "epochs": 100,
 
-        "save_dir": "saved/",
+        "save_dir": "I:/Data/Deep-MVLM/saved/",
         "save_period": 1,
         "verbosity": 2,
         
