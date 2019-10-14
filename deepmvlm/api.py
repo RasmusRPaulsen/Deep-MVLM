@@ -6,9 +6,16 @@ from prediction import Predict2D
 from torch.utils.model_zoo import load_url
 
 models_urls = {
-    'MVLMModel_DTU3D-RGB': 'https://people.compute.dtu.dk/rapa/Deep-MVLM/models/MVLMModel_DTU3D_RGB_07092019-c1cc3d59.pth',
-    'MVLMModel_DTU3D-depth': 'https://people.compute.dtu.dk/rapa/Deep-MVLM/models/MVLMModel_DTU3D_Depth_19092019-ad636c81.pth',
-    'MVLMModel_BU_3DFE-RGB': 'https://people.compute.dtu.dk/rapa/Deep-MVLM/models/MVLMModel_BU_3DFE_RGB_24092019_6epoch-9f242c87.pth',
+    'MVLMModel_DTU3D-RGB':
+        'https://people.compute.dtu.dk/rapa/Deep-MVLM/models/MVLMModel_DTU3D_RGB_07092019-c1cc3d59.pth',
+    'MVLMModel_DTU3D-depth':
+        'https://people.compute.dtu.dk/rapa/Deep-MVLM/models/MVLMModel_DTU3D_Depth_19092019-ad636c81.pth',
+    'MVLMModel_DTU3D-geometry':
+        'https://people.compute.dtu.dk/rapa/Deep-MVLM/models/MVLMModel_DTU3D_geometry-9d2feee6.pth',
+    'MVLMModel_DTU3D-RGB+depth':
+        'https://people.compute.dtu.dk/rapa/Deep-MVLM/models/MVLMModel_DTU3D_RGB+depth_20092019-7fc1d845.pth',
+    'MVLMModel_BU_3DFE-RGB':
+        'https://people.compute.dtu.dk/rapa/Deep-MVLM/models/MVLMModel_BU_3DFE_RGB_24092019_6epoch-9f242c87.pth',
 }
 
 

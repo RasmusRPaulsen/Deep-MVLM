@@ -12,12 +12,18 @@ Logging:
 Change name of DTU3DFaceDataLoader etc. (can also read BU-3DFE)
  
 Training
- - train and evaluate models on DTU-3D
+ - train and evaluate models on DTU-3D: geometry+depth
  - train and evaluate models on BU-3DFE
  - Prøv : torch.backends.cudnn.benchmark = True
  
+Test both DTU-3D and BU-3DFE on test sets 
+ 
+ 
+Pre-translation and rotation
+ - find smart way to pre-align and pre rotate models 
+ 
 Code
- - download models automatically
+ - download models automatically (ok)
  - predict on one file
  - predict on list of files
  - predict all files in directory

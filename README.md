@@ -18,9 +18,43 @@ If you use Deep-MVLM in your research, please cite the
 }
 ```
 
+## Features
+
+Detect 3D landmarks in 3D facial surfaces
+
+```Python
+import argparse
+from parse_config import ConfigParser
+import deepmvlm
+from utils3d import Utils3D
+
+dm = deepmvlm.DeepMVLM(config)
+landmarks = dm.predict_one_file(file_name)
+dm.write_landmarks_as_vtk_points(landmarks, name_lm_vtk)
+dm.write_landmarks_as_text(landmarks, name_lm_txt)
+dm.visualise_mesh_and_landmarks(file_name, landmarks)
+```
+
+The full source (including how to read the JSON config files) is [predict.py]
+
 ## Getting Deep-MVLM
 
+Download or clone from github
+
 ### Requriements
+
+The code has been tested under Windows 10 both with a GPU enabled (Titan X) computer and without a GPUs. It has been tested with the following dependencies
+
+- Python 3.7
+- Pytorch 1.2
+- vtk 8.2
+- libnetcdf 4.7.1 (needed by vtk)
+- imageio 2.6
+- matplotlib 3.1.1
+- scipy 1.3.1
+- scikit-image 0.15
+- tensorboard 1.14
+- absl-py 0.8
 
 
 ## Getting started
@@ -50,13 +84,13 @@ python train.py --device 2,3 --c config.json
 ```
 The program check if a GPU is present and if it has the required CUDA capabilities (3.5 and up). If not, the CPU is used - will be slow but still works.
 
-## How to use Deep-MVLM with the BU-3DFE dataset
+## How to train and use Deep-MVLM with the BU-3DFE dataset
 
 The Binghamton University 3D Facial Expression Database (BU-3DFE) is a standard database for testing the performance of 3D facial analysis software tools. Here it is described how this database can be used to train and evaluate the performance of Deep-MVLM. The following approach can be adapted to your own dataset.
 
 Start by requesting and downloading the database from [the official BU-3DFE site](http://www.cs.binghamton.edu/~lijun/Research/3DFE/3DFE_Analysis.html)
 
-Secondly, download the 3D landmarks for the raw data from [Rasmus R. Paulsens homepage](http://people.compute.dtu.dk/rapa/BU-3DFE/BU_3DFE_84_landmarks_rapa.zip). The landmarks from the original BU-3DFE distribution is fitted to the cropped face data. Unfortunately, the raw and cropped face data are not in alignment. The data fra Rasmus' site has been aligned to the raw data, thus making it possible to train and evaluate on the raw face data. There are 84 landmarks in this set end they are defined as: (**TBD**)
+Secondly, download the 3D landmarks for the raw data from [Rasmus R. Paulsens homepage](http://people.compute.dtu.dk/rapa/BU-3DFE/BU_3DFE_84_landmarks_rapa.zip). The landmarks from the original BU-3DFE distribution is fitted to the cropped face data. Unfortunately, the raw and cropped face data are not in alignment. The data fra Rasmus' site has been aligned to the raw data, thus making it possible to train and evaluate on the raw face data. There are 84 landmarks in this set end they are defined as [docs/BU-3DFE_landmark_info.txt].
 
 A set of example JSON configuration files are provided. Use for example config_RGB_BU_3DFE.json and modify it to your needs. Change **raw_data_dir**, **processed_data_dir**, **data_dir** (should be equal to processed_data_dir) to your setup.
 

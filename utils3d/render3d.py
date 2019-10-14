@@ -753,10 +753,10 @@ class Render3D:
         actor_text.SetMapper(mapper)
         if texture_img is not None:
             actor_text.SetTexture(texture)
-        actor_text.GetProperty().SetColor(1, 1, 1)
-        actor_text.GetProperty().SetAmbient(1.0)
-        actor_text.GetProperty().SetSpecular(0)
-        actor_text.GetProperty().SetDiffuse(0)
+            actor_text.GetProperty().SetColor(1, 1, 1)
+            actor_text.GetProperty().SetAmbient(1.0)
+            actor_text.GetProperty().SetSpecular(0)
+            actor_text.GetProperty().SetDiffuse(0)
         ren.AddActor(actor_text)
 
         actor_geometry = vtk.vtkActor()
@@ -985,10 +985,10 @@ class Render3D:
         actor_text.SetMapper(mapper)
         if texture_img is not None:
             actor_text.SetTexture(texture)
-        actor_text.GetProperty().SetColor(1, 1, 1)
-        actor_text.GetProperty().SetAmbient(1.0)
-        actor_text.GetProperty().SetSpecular(0)
-        actor_text.GetProperty().SetDiffuse(0)
+            actor_text.GetProperty().SetColor(1, 1, 1)
+            actor_text.GetProperty().SetAmbient(1.0)
+            actor_text.GetProperty().SetSpecular(0)
+            actor_text.GetProperty().SetDiffuse(0)
         ren.AddActor(actor_text)
 
         actor_geometry = vtk.vtkActor()
@@ -1393,10 +1393,10 @@ class Render3D:
             actor_text.SetMapper(mapper)
             if texture_img is not None:
                 actor_text.SetTexture(texture)
-            actor_text.GetProperty().SetColor(1, 1, 1)
-            actor_text.GetProperty().SetAmbient(1.0)
-            actor_text.GetProperty().SetSpecular(0)
-            actor_text.GetProperty().SetDiffuse(0)
+                actor_text.GetProperty().SetColor(1, 1, 1)
+                actor_text.GetProperty().SetAmbient(1.0)
+                actor_text.GetProperty().SetSpecular(0)
+                actor_text.GetProperty().SetDiffuse(0)
             ren.AddActor(actor_text)
 
         if landmarks is not None:
