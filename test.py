@@ -337,14 +337,14 @@ def test_on_bu_3d_fe(config):
     for f_name in files:
         lm_name = bu_3dfe_dir + f_name + '_RAW_84_LMS.txt'
         wrl_name = bu_3dfe_dir + f_name + '_RAW.wrl'
-        bmp_name = bu_3dfe_dir + f_name + '_F3D.bmp'
+        # bmp_name = bu_3dfe_dir + f_name + '_F3D.bmp'
 
         gt_lms = read_3d_landmarks(lm_name)
         if os.path.isfile(wrl_name):
             print('Computing file ', idx, ' of ', len(files))
 
             render_3d = Render3D(config)
-            image_stack, transform_stack = render_3d.render_3d_file(wrl_name, bmp_name)
+            image_stack, transform_stack = render_3d.render_3d_file(wrl_name)
 
             predict_2d = Predict2D(config, model, device)
             heatmap_maxima = predict_2d.predict_heatmaps_from_images(image_stack)

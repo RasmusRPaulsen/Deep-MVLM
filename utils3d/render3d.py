@@ -669,7 +669,7 @@ class Render3D:
         del ren, ren_win, t
         return image_stack
 
-    def render_3d_wrl_rgb_geometry_depth(self, transform_stack, file_name, texture_file_name=None):
+    def render_3d_wrl_rgb_geometry_depth(self, transform_stack, file_name):
         write_image_files = self.config['process_3d']['write_renderings']
         off_screen_rendering = self.config['process_3d']['off_screen_rendering']
         n_views = self.config['data_loader']['args']['n_views']
@@ -693,7 +693,6 @@ class Render3D:
             texture.SetInterpolate(1)
             texture.SetQualityTo32Bit()
             texture.SetInputData(texture_img)
-            del texture_img
 
         # check for texture files
         # if texture_file_name is None:
@@ -899,11 +898,12 @@ class Render3D:
 
         del writer_png_2, writer_png, ren_win, actor_geometry, actor_text, mapper, w2if, t, trans, vrmlin
         if texture_img is not None:
+            del texture_img
             del texture
         # del texture_image
         return image_stack
 
-    def render_3d_vtk_ply_stl_rgb_geometry_depth(self, transform_stack, file_name, texture_file_name=None):
+    def render_3d_vtk_ply_stl_rgb_geometry_depth(self, transform_stack, file_name):
         write_image_files = self.config['process_3d']['write_renderings']
         off_screen_rendering = self.config['process_3d']['off_screen_rendering']
         n_views = self.config['data_loader']['args']['n_views']
@@ -921,11 +921,11 @@ class Render3D:
 
         texture_img = Utils3D.multi_read_texture(file_name)
         if texture_img is not None:
+            pd.GetPointData().SetScalars(None)
             texture = vtk.vtkTexture()
             texture.SetInterpolate(1)
             texture.SetQualityTo32Bit()
             texture.SetInputData(texture_img)
-            del texture_img
 
 
         # check for texture files
@@ -983,7 +983,7 @@ class Render3D:
 
         actor_text = vtk.vtkActor()
         actor_text.SetMapper(mapper)
-        if texture_file_name is not None:
+        if texture_img is not None:
             actor_text.SetTexture(texture)
         actor_text.GetProperty().SetColor(1, 1, 1)
         actor_text.GetProperty().SetAmbient(1.0)
@@ -1130,11 +1130,12 @@ class Render3D:
 
         del writer_png_2, writer_png, ren_win, actor_geometry, actor_text, mapper, w2if, t, trans
         if texture_img is not None:
+            del texture_img
             del texture
         # del texture_image
         return image_stack
 
-    def render_3d_file(self, file_name, texture_file_name=None):
+    def render_3d_file(self, file_name):
         image_channels = self.config['data_loader']['args']['image_channels']
         file_type = os.path.splitext(file_name)[1]
 
@@ -1149,32 +1150,32 @@ class Render3D:
             image_stack = image_stack / 255
         elif file_type == ".wrl" and image_channels == "RGB":
             transformation_stack = self.generate_3d_transformations()
-            image_stack_full = self.render_3d_wrl_rgb_geometry_depth(transformation_stack, file_name, texture_file_name)
+            image_stack_full = self.render_3d_wrl_rgb_geometry_depth(transformation_stack, file_name)
             n_channels = 3
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:3] = image_stack_full[:, :, :, 0:3] / 255
         elif file_type == ".wrl" and image_channels == "geometry":
             transformation_stack = self.generate_3d_transformations()
-            image_stack_full = self.render_3d_wrl_rgb_geometry_depth(transformation_stack, file_name, texture_file_name)
+            image_stack_full = self.render_3d_wrl_rgb_geometry_depth(transformation_stack, file_name)
             n_channels = 1
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:1] = image_stack_full[:, :, :, 3:4] / 255
         elif file_type == ".wrl" and image_channels == "depth":
             transformation_stack = self.generate_3d_transformations()
-            image_stack_full = self.render_3d_wrl_rgb_geometry_depth(transformation_stack, file_name, texture_file_name)
+            image_stack_full = self.render_3d_wrl_rgb_geometry_depth(transformation_stack, file_name)
             n_channels = 1
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:1] = image_stack_full[:, :, :, 4:5] / 255
         elif file_type == ".wrl" and image_channels == "geometry+depth":
             transformation_stack = self.generate_3d_transformations()
-            image_stack_full = self.render_3d_wrl_rgb_geometry_depth(transformation_stack, file_name, texture_file_name)
+            image_stack_full = self.render_3d_wrl_rgb_geometry_depth(transformation_stack, file_name)
             n_channels = 2
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:1] = image_stack_full[:, :, :, 3:4] / 255
             image_stack[:, :, :, 1:2] = image_stack_full[:, :, :, 4:5] / 255
         elif file_type == ".wrl" and image_channels == "RGB+depth":
             transformation_stack = self.generate_3d_transformations()
-            image_stack_full = self.render_3d_wrl_rgb_geometry_depth(transformation_stack, file_name, texture_file_name)
+            image_stack_full = self.render_3d_wrl_rgb_geometry_depth(transformation_stack, file_name)
             n_channels = 4
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:3] = image_stack_full[:, :, :, 0:3] / 255
@@ -1204,28 +1205,28 @@ class Render3D:
         elif (file_type == ".vtk" or file_type == ".stl" or file_type == ".ply") and image_channels == "RGB":
             transformation_stack = self.generate_3d_transformations()
             image_stack_full = self.render_3d_vtk_ply_stl_rgb_geometry_depth(
-                transformation_stack, file_name, texture_file_name)
+                transformation_stack, file_name)
             n_channels = 3
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:3] = image_stack_full[:, :, :, 0:3] / 255
         elif (file_type == ".vtk" or file_type == ".stl" or file_type == ".ply") and image_channels == "geometry":
             transformation_stack = self.generate_3d_transformations()
             image_stack_full = self.render_3d_vtk_ply_stl_rgb_geometry_depth(
-                transformation_stack, file_name, texture_file_name)
+                transformation_stack, file_name)
             n_channels = 1
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:1] = image_stack_full[:, :, :, 3:4] / 255
         elif (file_type == ".vtk" or file_type == ".stl" or file_type == ".ply") and image_channels == "depth":
             transformation_stack = self.generate_3d_transformations()
             image_stack_full = self.render_3d_vtk_ply_stl_rgb_geometry_depth(
-                transformation_stack, file_name, texture_file_name)
+                transformation_stack, file_name)
             n_channels = 1
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:1] = image_stack_full[:, :, :, 4:5] / 255
         elif (file_type == ".vtk" or file_type == ".stl" or file_type == ".ply") and image_channels == "RGB+depth":
             transformation_stack = self.generate_3d_transformations()
             image_stack_full = self.render_3d_vtk_ply_stl_rgb_geometry_depth(
-                transformation_stack, file_name, texture_file_name)
+                transformation_stack, file_name)
             n_channels = 4
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:3] = image_stack_full[:, :, :, 0:3] / 255
@@ -1233,7 +1234,7 @@ class Render3D:
         elif (file_type == ".vtk" or file_type == ".stl" or file_type == ".ply") and image_channels == "geometry+depth":
             transformation_stack = self.generate_3d_transformations()
             image_stack_full = self.render_3d_vtk_ply_stl_rgb_geometry_depth(
-                transformation_stack, file_name, texture_file_name)
+                transformation_stack, file_name)
             n_channels = 2
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:1] = image_stack_full[:, :, :, 3:4] / 255
@@ -1305,7 +1306,7 @@ class Render3D:
         return append.GetOutput()
 
     @staticmethod
-    def visualise_mesh_and_landmarks(mesh_name, landmarks=None, texture_file_name = None):
+    def visualise_mesh_and_landmarks(mesh_name, landmarks=None):
         file_type = os.path.splitext(mesh_name)[1]
         win_size = 512
 
@@ -1351,11 +1352,11 @@ class Render3D:
 
             texture_img = Utils3D.multi_read_texture(mesh_name)
             if texture_img is not None:
+                pd.GetPointData().SetScalars(None)
                 texture = vtk.vtkTexture()
                 texture.SetInterpolate(1)
                 texture.SetQualityTo32Bit()
                 texture.SetInputData(texture_img)
-                del texture_img
 
             # check for texture files
             # if texture_file_name is None:
@@ -1390,7 +1391,7 @@ class Render3D:
 
             actor_text = vtk.vtkActor()
             actor_text.SetMapper(mapper)
-            if texture_file_name is not None:
+            if texture_img is not None:
                 actor_text.SetTexture(texture)
             actor_text.GetProperty().SetColor(1, 1, 1)
             actor_text.GetProperty().SetAmbient(1.0)

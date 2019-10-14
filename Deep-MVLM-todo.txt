@@ -24,7 +24,7 @@ Code
  - examples: 3D estimation og VTK plot på Rasmus
 
 GitHub
- - determine license (BSD-2 Clause / MIT license)
+ - determine license (BSD-2 Clause / MIT license) (ok)
  - put file description in header (Kristine credits) (http://web.archive.org/web/20111010053227/http://jaynes.colorado.edu/PythonGuidelines.html#module_formatting)
  - upload clean code
  - upload example data
@@ -36,8 +36,8 @@ Anaconda cloud
  - check https://github.com/1adrianb/face-alignment
  
 Arxiv
- - upload paper and description
- - citation
+ - upload paper and description (ok)
+ - citation (ok)
  
 Conda
  - find out how to put code online
