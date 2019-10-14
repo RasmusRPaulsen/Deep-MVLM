@@ -37,7 +37,8 @@ class Trainer(BaseTrainer):
         acc_metrics = np.zeros(len(self.metrics))
         for i, metric in enumerate(self.metrics):
             acc_metrics[i] += metric(output, target)
-            self.writer.writer.add_scalar('{}'.format(metric.__name__), acc_metrics[i])
+            if self.writer is not None:
+                self.writer.writer.add_scalar('{}'.format(metric.__name__), acc_metrics[i])
         return acc_metrics
 
     def _train_epoch(self, epoch):
@@ -64,7 +65,7 @@ class Trainer(BaseTrainer):
         for batch_idx, sample_batched in enumerate(self.data_loader):
             data, target = sample_batched['image'], sample_batched['heat_map_stack']
 
-            # TODO: Debug to check heatmap
+            # Debug to check heatmap
             # lm_no = 26
             # name_hm_maxima = self.config.temp_dir / ('hm_maxima' + str(batch_idx) + '_LM_' + str(lm_no) + '.png')
             # hm_debug = target[0, 0, :, :, lm_no]
@@ -90,7 +91,8 @@ class Trainer(BaseTrainer):
             self.optimizer.step()
 
             # self.writer.set_step((epoch - 1) * self.len_epoch + batch_idx)
-            self.writer.writer.add_scalar('train/loss', loss.item())
+            if self.writer is not None:
+                self.writer.writer.add_scalar('train/loss', loss.item())
             total_loss += loss.item()
 
             # TODO: Compute custom metrics (Landmark distances etc)
@@ -157,13 +159,11 @@ class Trainer(BaseTrainer):
                 output = output.permute(1, 0, 2, 3, 4)
                 target = target.permute(0, 1, 4, 2, 3)
 
-                # TODO: Figure out and clean up these conversions
-                # output = output.to(torch.float)
-
                 loss = self.loss(output, target)
 
                 # self.writer.set_step((epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')
-                self.writer.writer.add_scalar('validation/loss', loss.item())
+                if self.writer is not None:
+                    self.writer.writer.add_scalar('validation/loss', loss.item())
                 total_val_loss += loss.item()
 
                 time_per_test = (time.time() - start_time) / (batch_idx + 1)

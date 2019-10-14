@@ -5,7 +5,7 @@ import numpy as np
 from skimage import transform
 
 
-class DTU3DFaceDataset(Dataset):
+class FaceDataset(Dataset):
     """
     DTU-3D face dataset
     Class inspired from https://pytorch.org/tutorials/beginner/data_loading_tutorial.html
