@@ -95,6 +95,16 @@ python predict.py --c configs/DTU3D-RGB+depth.json --n yourdirectory
 
 where **yourdirectory** is a directory (or directory tree) containing scans. It will process all **obj, wrl, vtk, stl** and **ply** files.
 
+## Predict landmarks on a file with scan names
+
+Select a configuration file following the approach above and do the prediction:
+
+```
+python predict.py --c configs/DTU3D-RGB+depth.json --n yourfile.txt
+```
+
+where **yourfile.txt** is a text file containing names of scans to be processed.
+
 ## How to use the framework in your own code
 
 Detect 3D landmarks in a 3D facial scan
