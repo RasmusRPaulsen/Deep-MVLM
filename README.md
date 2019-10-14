@@ -35,7 +35,7 @@ dm.write_landmarks_as_text(landmarks, name_lm_txt)
 dm.visualise_mesh_and_landmarks(file_name, landmarks)
 ```
 
-The full source (including how to read the JSON config files) is [predict.py]
+The full source (including how to read the JSON config files) is [here](predict.py)
 
 ## Getting Deep-MVLM
 
@@ -67,8 +67,19 @@ This should create two landmarks files (a .vtk file and a .txt) file in the asse
 
 ![Predicted output](art/PredictWindow.png)
 
+## Supported formats and types
+
+The framework can place landmarks on surface without textures, with textures and with vertex coloring. The supported formats are:
+
+- **OBJ** textured surfaces (including multi textures), non-textured surfaces
+- **WRL** textured surfaces (only single texture), non-textured surfaces
+- **VTK** textured surfaces (only single texture), vertex colored surfaces, non-textured surfaces
+- **STL** non-textured surfaces
+- **PLY** non-textured surfaces
+
+
 ### Rendering types
-The type of 3D rendering used is specified in the **image_channels** setting. The options are:
+The type of 3D rendering used is specified in the **image_channels** setting in the JSON configuration file. The options are:
 - **geometry** pure geometry rendering without texture (1 image channel)
 - **depth** depth rendering (the z-buffer) similar to range scanners like the Kinect (1 image channel)
 - **RGB** texture rendering (3 image channels)
@@ -90,7 +101,7 @@ The Binghamton University 3D Facial Expression Database (BU-3DFE) is a standard 
 
 Start by requesting and downloading the database from [the official BU-3DFE site](http://www.cs.binghamton.edu/~lijun/Research/3DFE/3DFE_Analysis.html)
 
-Secondly, download the 3D landmarks for the raw data from [Rasmus R. Paulsens homepage](http://people.compute.dtu.dk/rapa/BU-3DFE/BU_3DFE_84_landmarks_rapa.zip). The landmarks from the original BU-3DFE distribution is fitted to the cropped face data. Unfortunately, the raw and cropped face data are not in alignment. The data fra Rasmus' site has been aligned to the raw data, thus making it possible to train and evaluate on the raw face data. There are 84 landmarks in this set end they are defined as [docs/BU-3DFE_landmark_info.txt].
+Secondly, download the 3D landmarks for the raw data from [Rasmus R. Paulsens homepage](http://people.compute.dtu.dk/rapa/BU-3DFE/BU_3DFE_84_landmarks_rapa.zip). The landmarks from the original BU-3DFE distribution is fitted to the cropped face data. Unfortunately, the raw and cropped face data are not in alignment. The data fra Rasmus' site has been aligned to the raw data, thus making it possible to train and evaluate on the raw face data. There are 84 landmarks in this set end they are defined [here](docs/BU-3DFE_landmark_info.txt).
 
 A set of example JSON configuration files are provided. Use for example config_RGB_BU_3DFE.json and modify it to your needs. Change **raw_data_dir**, **processed_data_dir**, **data_dir** (should be equal to processed_data_dir) to your setup.
 
