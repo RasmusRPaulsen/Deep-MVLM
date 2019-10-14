@@ -86,6 +86,34 @@ The type of 3D rendering used is specified in the **image_channels** setting in 
 - **RGB+depth** texture plus depth rendering (3+1=4 image channels)
 - **geometry+depth** geometry plus depth rendering (1+1=2 image channels)
 
+### Pre-trained networks
+
+The algorithm comes with pre-trained networks for the landmark sets **DTU3D** consisting of 73 landmarks that are described **TBD** and the landmark set from **BU-3DFE** described further down.
+
+## Predict landmarks on a single scan
+
+First determine what landmark set you want to place. Either **DTU3D** or **BU-3DFE**. Secondly, choose the rendering type suitable for your scan. Here are some recommendations:
+
+- **surface with RGB texture** use **RGB+depth** or **RGB**
+- **surface with vertex colors** use **RGB+depth** or **RGB**
+- **surface with no texture** use **geometry+depth**, **geometry** or **depth**
+
+Now you can choose the JSON config file that fits your need. For example **configs/DTU3D-RGB+depth**. Finally, do the prediction:
+
+```
+python predict.py --c configs/DTU3D-RGB+depth.json --n yourscan
+```
+
+## Predict landmarks on a directory with scans
+
+Select a configuration file following the approach above and do the prediction:
+
+```
+python predict.py --c configs/DTU3D-RGB+depth.json --n yourdirectory
+```
+
+where **yourdirectory** is a directory (or directory tree) containing scans. It will process all **obj, wrl, vtk, stl** and **ply** files.
+
 
 ### Using Multiple GPUs
 
