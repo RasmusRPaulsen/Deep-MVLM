@@ -24,7 +24,7 @@ Download or clone from github
 
 ### Requriements
 
-The code has been tested under Windows 10 both with a GPU enabled (Titan X) computer and without a GPUs. It has been tested with the following dependencies
+The code has been tested under Windows 10 both with a GPU enabled (Titan X) computer and without a GPU (works but slow). It has been tested with the following dependencies
 
 - Python 3.7
 - Pytorch 1.2
@@ -79,7 +79,7 @@ First determine what landmark set you want to place. Either **DTU3D** or **BU-3D
 - **surface with vertex colors** use **RGB+depth** or **RGB**
 - **surface with no texture** use **geometry+depth**, **geometry** or **depth**
 
-Now you can choose the JSON config file that fits your need. For example **configs/DTU3D-RGB+depth**. Finally, do the prediction:
+Now you can choose the JSON config file that fits your need. For example **configs/DTU3D-RGB+depth.json**. Finally, do the prediction:
 
 ```
 python predict.py --c configs/DTU3D-RGB+depth.json --n yourscan
@@ -112,7 +112,7 @@ dm.write_landmarks_as_text(landmarks, name_lm_txt)
 dm.visualise_mesh_and_landmarks(file_name, landmarks)
 ```
 
-The full source (including how to read the JSON config files) is [here](predict.py)
+The full source (including how to read the JSON config files) is [predict.py](predict.py)
 
 
 
@@ -173,11 +173,8 @@ python test --c config_RGB_BU_3DFE.json --r path-and-file-name-of-model.pth
 where **path-and-file-name-of-model.pth** is the path and filename of the model that should be tested. It should match the configuration in the supplied JSON file. Test results will be placed in a folder named **saved\\temp\\MVLMModel_BU_3DFE\\DDMMYY_HHMMSS\\**. Most interesting is the **results.csv** that lists the distance error for each landmark for each test mesh.
 
 
-
-
-
 ## Team
-Rasmus R. Paulsen and Kristine Aavild Juhl
+[Rasmus R. Paulsen](people.compute.dtu.dk/rapa) and [Kristine Aavild Juhl](https://www.dtu.dk/english/service/phonebook/person?id=88961&tab=2&qt=dtupublicationquery)
 
 ## License
 Deep-MVLM is released under the MIT license. See the [LICENSE file](LICENSE) for more details.
