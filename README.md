@@ -174,7 +174,7 @@ where **path-and-file-name-of-model.pth** is the path and filename of the model 
 
 
 ## Team
-[Rasmus R. Paulsen](people.compute.dtu.dk/rapa) and [Kristine Aavild Juhl](https://www.dtu.dk/english/service/phonebook/person?id=88961&tab=2&qt=dtupublicationquery)
+[Rasmus R. Paulsen](http://people.compute.dtu.dk/rapa) and [Kristine Aavild Juhl](https://www.dtu.dk/english/service/phonebook/person?id=88961&tab=2&qt=dtupublicationquery)
 
 ## License
 Deep-MVLM is released under the MIT license. See the [LICENSE file](LICENSE) for more details.
