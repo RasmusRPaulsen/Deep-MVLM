@@ -1,7 +1,7 @@
 # Deep learning based 3D landmark placement
 A tool for precisely placing 3D landmarks on 3D facial scans based on the paper **Multi-view Consensus CNN for 3D Facial Landmark Placement**.
 
-![Overview](art/CompleteFlow2.png)
+![Overview](art/deep-mvlm-banner.png)
 
 ## Citing Deep-MVLM
 
@@ -17,25 +17,6 @@ If you use Deep-MVLM in your research, please cite the
   organization={Springer}
 }
 ```
-
-## Features
-
-Detect 3D landmarks in 3D facial surfaces
-
-```Python
-import argparse
-from parse_config import ConfigParser
-import deepmvlm
-from utils3d import Utils3D
-
-dm = deepmvlm.DeepMVLM(config)
-landmarks = dm.predict_one_file(file_name)
-dm.write_landmarks_as_vtk_points(landmarks, name_lm_vtk)
-dm.write_landmarks_as_text(landmarks, name_lm_txt)
-dm.visualise_mesh_and_landmarks(file_name, landmarks)
-```
-
-The full source (including how to read the JSON config files) is [here](predict.py)
 
 ## Getting Deep-MVLM
 
@@ -113,6 +94,26 @@ python predict.py --c configs/DTU3D-RGB+depth.json --n yourdirectory
 ```
 
 where **yourdirectory** is a directory (or directory tree) containing scans. It will process all **obj, wrl, vtk, stl** and **ply** files.
+
+## How to use the framework in your own code
+
+Detect 3D landmarks in a 3D facial scan
+
+```Python
+import argparse
+from parse_config import ConfigParser
+import deepmvlm
+from utils3d import Utils3D
+
+dm = deepmvlm.DeepMVLM(config)
+landmarks = dm.predict_one_file(file_name)
+dm.write_landmarks_as_vtk_points(landmarks, name_lm_vtk)
+dm.write_landmarks_as_text(landmarks, name_lm_txt)
+dm.visualise_mesh_and_landmarks(file_name, landmarks)
+```
+
+The full source (including how to read the JSON config files) is [here](predict.py)
+
 
 
 ### Using Multiple GPUs
