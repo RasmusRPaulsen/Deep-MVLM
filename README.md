@@ -167,6 +167,9 @@ python train --c config_RGB_BU_3DFE.json
 is used. The result of the training (the model) will be placed in a folder **saved\\models\\MVLMModel_BU_3DFE\\DDMMYY_HHMMSS\\**, where the **saved** folder can be specified in the JSON configuration file. **DDMMYY_HHMMSS** is the current date and time. A simple training log can be found in **saved\\log\\MVLMModel_BU_3DFE\\DDMMYY_HHMMSS\\**.
 After training, it is recommended to rename and copy the best trained model **best-model.pth** to a suitable location. For example **saved\\trained\\*.
 
+### Tensorboard visualisation
+[Tensorboard](https://www.tensorflow.org/tensorboard) visualisation of the training and validation losses can be enabled in the JSON configuration file. The tensorboard data will be placed in the **saved\\log\\MVLMModel_BU_3DFE\\DDMMYY_HHMMSS\\** directory. 
+
 #### Resuming training
 If training is stopped for some reason, it is possible to resume training by using
 ```
