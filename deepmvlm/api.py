@@ -80,6 +80,7 @@ class DeepMVLM:
         model.eval()
         return device, model
 
+    # Deprecated - should not be used
     def _get_device_and_load_model(self):
         logger = self.config.get_logger('test')
 
