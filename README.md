@@ -1,5 +1,5 @@
 # Deep learning based 3D landmark placement
-A tool for accurately placing 3D landmarks on 3D facial scans based on the paper **Multi-view Consensus CNN for 3D Facial Landmark Placement**.
+A tool for accurately placing 3D landmarks on 3D facial scans based on the paper [Multi-view Consensus CNN for 3D Facial Landmark Placement](https://arxiv.org/abs/1910.06007).
 
 ![Overview](art/deep-mvlm-banner.png)
 
