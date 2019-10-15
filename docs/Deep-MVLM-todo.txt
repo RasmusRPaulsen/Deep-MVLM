@@ -1,49 +1,21 @@
-Check when reading landmarks:
-Update dataset online
-FileNotFoundError: [Errno 2] No such file or directory: 'I:/Data/BU_3DFE/M0013\\M0013_AN04AE_RAW_84_LMS.txt'
-
-When doing resume:
-UnboundLocalError: local variable 'not_improved_count' referenced before assignment
 
 Logging:
  - be stringent in using the logging tool
 
-
-Change name of DTU3DFaceDataLoader etc. (can also read BU-3DFE)
- 
 Training
  - train and evaluate models on DTU-3D: geometry+depth
- - train and evaluate models on BU-3DFE
- - Prøv : torch.backends.cudnn.benchmark = True
+ - train and evaluate models on BU-3DFE: geometry+depth
  
 Test both DTU-3D and BU-3DFE on test sets 
- 
  
 Pre-translation and rotation
  - find smart way to pre-align and pre rotate models 
  
-Code
- - download models automatically (ok)
- - predict on one file
- - predict on list of files
- - predict all files in directory
- - examples: 3D estimation og VTK plot på Rasmus
-
 GitHub
- - determine license (BSD-2 Clause / MIT license) (ok)
  - put file description in header (Kristine credits) (http://web.archive.org/web/20111010053227/http://jaynes.colorado.edu/PythonGuidelines.html#module_formatting)
- - upload clean code
- - upload example data
- - upload BU-3DFE landmark sets
- - write description and instructions
- - citation
  
 Anaconda cloud
  - check https://github.com/1adrianb/face-alignment
- 
-Arxiv
- - upload paper and description (ok)
- - citation (ok)
  
 Conda
  - find out how to put code online
