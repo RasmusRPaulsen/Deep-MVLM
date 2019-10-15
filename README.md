@@ -6,7 +6,7 @@ A tool for accurately placing 3D landmarks on 3D facial scans based on the paper
 ## Citing Deep-MVLM
 
 If you use Deep-MVLM in your research, please cite the
-[paper](TBD):
+[paper](https://arxiv.org/abs/1910.06007):
 ```
 @inproceedings{paulsen2018multi,
   title={Multi-view Consensus CNN for 3D Facial Landmark Placement},
