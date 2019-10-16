@@ -115,14 +115,14 @@ In order to re-align a scan to this system, a section of the JSON configuration 
 ```
 "pre-align": {
 	"align_center_of_mass" : true,
-	"rot_x": 180,
-	"rot_y": 180,
-	"rot_z": 0,
+	"rot_x": 0,
+	"rot_y": 0,
+	"rot_z": 180,
 	"scale": 1,
 	"write_pre_aligned": true
 }
 ```
-Here the scan is first aligned so the center-of-mass of the scan is aligned to the origo. Secondly, it is rotated 180 degrees around the x-axis followed by a 180 degrees rotation around the y-axis. The rotation order is z-x-y. This will align this scan:
+Here the scan is first aligned so the center-of-mass of the scan is aligned to the origo. Secondly, it is rotated 180 degrees around the z-axis. The rotation order is z-x-y. This will align this scan:
 
 ![mri-coord-system](art/mr_org_coord.png)
 
@@ -130,6 +130,7 @@ so it is aligned for processing and the result is:
 
 ![mri-results3](art/mr-head-landmarks3.png)
 
+this configuration file can be found as [configs/DTU3D-depth-MRI.json](configs/DTU3D-depth-MRI.json)
 
 ## How to use the framework in your own code
 
