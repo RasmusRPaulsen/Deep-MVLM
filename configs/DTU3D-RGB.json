@@ -60,7 +60,7 @@
         "filter_view_lines": "quantile",
         "heatmap_max_quantile": 0.5,
         "heatmap_abs_threshold": 0.5,
-        "write_renderings": false,
+        "write_renderings": true,
         "off_screen_rendering": true,
         "min_x_angle": -40,
         "max_x_angle": 40,
