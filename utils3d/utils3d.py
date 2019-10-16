@@ -386,12 +386,76 @@ class Utils3D:
 
         return None
 
+    # TODO this is also presnet in render3D - should probably be merged
+    def apply_pre_transformation(self, pd):
+        translation = [0, 0, 0]
+        if self.config['pre-align']['align_center_of_mass']:
+            vtk_cm = vtk.vtkCenterOfMass()
+            vtk_cm.SetInputData(pd)
+            vtk_cm.SetUseScalarsAsWeights(False)
+            vtk_cm.Update()
+            cm = vtk_cm.GetCenter()
+            translation = [-cm[0], -cm[1], -cm[2]]
+
+        t = vtk.vtkTransform()
+        t.Identity()
+
+        rx = self.config['pre-align']['rot_x']
+        ry = self.config['pre-align']['rot_y']
+        rz = self.config['pre-align']['rot_z']
+        s = self.config['pre-align']['scale']
+
+        t.Scale(s, s, s)
+        t.RotateY(ry)
+        t.RotateX(rx)
+        t.RotateZ(rz)
+        t.Translate(translation)
+        t.Update()
+
+        # Transform (assuming only one mesh)
+        trans = vtk.vtkTransformPolyDataFilter()
+        trans.SetInputData(pd)
+        trans.SetTransform(t)
+        trans.Update()
+
+        if self.config['pre-align']['write_pre_aligned']:
+            name_out = str(self.config.temp_dir / ('pre_transform_mesh.vtk'))
+            writer = vtk.vtkPolyDataWriter()
+            writer.SetInputData(trans.GetOutput())
+            writer.SetFileName(name_out)
+            writer.Write()
+
+        return trans.GetOutput(), t
+
+    def transform_landmarks_to_original_space(self, landmarks, t):
+        points = vtk.vtkPoints()
+        pd = vtk.vtkPolyData()
+        # verts = vtk.vtkCellArray()
+
+        for lm in landmarks:
+            pid = points.InsertNextPoint(lm)
+            # verts.InsertNextCell(1)
+            # verts.InsertCellPoint(pid)
+        pd.SetPoints(points)
+
+        trans = vtk.vtkTransformPolyDataFilter()
+        trans.SetInputData(pd)
+        trans.SetTransform(t.GetInverse())
+        trans.Update()
+        pd_trans = trans.GetOutput()
+
+        new_landmarks = []
+        for lm_no in range(pd_trans.GetNumberOfPoints()):
+            p = pd_trans.GetPoint(lm_no)
+            new_landmarks.append((p[0], p[1], p[2]))
+        return new_landmarks
+
     # Project found landmarks to closest point on the target surface
+    # return the landmarks in the original space
     def project_landmarks_to_surface(self, mesh_name):
-        # obj_in = vtk.vtkOBJReader()
-        # obj_in.SetFileName(mesh_name)
-        # obj_in.Update()
         pd = self.multi_read_surface(mesh_name)
+
+        pd, t = self.apply_pre_transformation(pd)
 
         clean = vtk.vtkCleanPolyData()
         clean.SetInputData(pd)
@@ -417,7 +481,9 @@ class Utils3D:
             # print('Nearest point in distance ', np.sqrt(np.float(dist2)))
             projected_landmarks[i, :] = tcp
 
-        self.landmarks = projected_landmarks
+        # self.landmarks = projected_landmarks
+        self.landmarks = self.transform_landmarks_to_original_space(projected_landmarks, t)
+
         del pd
         del clean
         del locator

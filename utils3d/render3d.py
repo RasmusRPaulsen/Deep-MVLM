@@ -645,6 +645,46 @@ class Render3D:
         # del texture_image
         return image_stack
 
+    def apply_pre_transformation(self, pd):
+        translation = [0, 0, 0]
+        if self.config['pre-align']['align_center_of_mass']:
+            vtk_cm = vtk.vtkCenterOfMass()
+            vtk_cm.SetInputData(pd)
+            vtk_cm.SetUseScalarsAsWeights(False)
+            vtk_cm.Update()
+            cm = vtk_cm.GetCenter()
+            translation = [-cm[0], -cm[1], -cm[2]]
+
+        t = vtk.vtkTransform()
+        t.Identity()
+
+        rx = self.config['pre-align']['rot_x']
+        ry = self.config['pre-align']['rot_y']
+        rz = self.config['pre-align']['rot_z']
+        s = self.config['pre-align']['scale']
+
+        t.Scale(s, s, s)
+        t.RotateY(ry)
+        t.RotateX(rx)
+        t.RotateZ(rz)
+        t.Translate(translation)
+        t.Update()
+
+        # Transform (assuming only one mesh)
+        trans = vtk.vtkTransformPolyDataFilter()
+        trans.SetInputData(pd)
+        trans.SetTransform(t)
+        trans.Update()
+
+        if self.config['pre-align']['write_pre_aligned']:
+            name_out = str(self.config.temp_dir / ('pre_transform_mesh.vtk'))
+            writer = vtk.vtkPolyDataWriter()
+            writer.SetInputData(trans.GetOutput())
+            writer.SetFileName(name_out)
+            writer.Write()
+
+        return trans.GetOutput()
+
     def render_3d_vtk_ply_stl_rgb_geometry_depth(self, transform_stack, file_name):
         write_image_files = self.config['process_3d']['write_renderings']
         off_screen_rendering = self.config['process_3d']['off_screen_rendering']
@@ -660,6 +700,8 @@ class Render3D:
         if pd.GetNumberOfPoints() < 1:
             print('Could not read', file_name)
             return None
+
+        pd = self.apply_pre_transformation(pd)
 
         texture_img = Utils3D.multi_read_texture(file_name)
         if texture_img is not None:
@@ -683,7 +725,6 @@ class Render3D:
         ren_win.SetSize(win_size, win_size)
         ren_win.SetOffScreenRendering(off_screen_rendering)
 
-        # Initialize Transform
         t = vtk.vtkTransform()
         t.Identity()
         t.Update()
