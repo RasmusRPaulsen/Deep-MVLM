@@ -73,7 +73,7 @@
         "raw_data_dir": "I:/Data/BU_3DFE/",
         "processed_data_dir": "I:/Data/FaceCNN/BU_3DFE_processed/",
         "off_screen_rendering": true
-    }
+    },
 	"pre-align": {
 		"align_center_of_mass" : false,
 		"rot_x": 0,

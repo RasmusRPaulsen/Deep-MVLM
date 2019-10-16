@@ -73,7 +73,7 @@
         "raw_data_dir": "",
         "processed_data_dir": "",
         "off_screen_rendering": true
-    }
+    },
 	"pre-align": {
 		"align_center_of_mass" : false,
 		"rot_x": 0,
