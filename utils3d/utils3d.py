@@ -444,10 +444,11 @@ class Utils3D:
         trans.Update()
         pd_trans = trans.GetOutput()
 
-        new_landmarks = []
+        n_landmarks = pd_trans.GetNumberOfPoints()
+        new_landmarks = np.zeros((n_landmarks, 3))
         for lm_no in range(pd_trans.GetNumberOfPoints()):
             p = pd_trans.GetPoint(lm_no)
-            new_landmarks.append((p[0], p[1], p[2]))
+            new_landmarks[lm_no, :] = (p[0], p[1], p[2])
         return new_landmarks
 
     # Project found landmarks to closest point on the target surface

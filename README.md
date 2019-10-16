@@ -105,6 +105,32 @@ python predict.py --c configs/DTU3D-RGB+depth.json --n yourfile.txt
 
 where **yourfile.txt** is a text file containing names of scans to be processed.
 
+## Specifying a pre-transformation
+
+The algorithm expects that the face has a general placement and orientation. Specifically, that the scan is centered around the origin and that the nose is pointing in the z-direction and the up of the head is aligned with the y-axis as seen here:
+
+![coord-system](art/coord_system.png)
+
+In order to re-align a scan to this system, a section of the JSON configuration file can be modified:
+```
+"pre-align": {
+	"align_center_of_mass" : true,
+	"rot_x": 180,
+	"rot_y": 180,
+	"rot_z": 0,
+	"scale": 1,
+	"write_pre_aligned": true
+}
+```
+Here the scan is first aligned so the center-of-mass of the scan is aligned to the origo. Secondly, it is rotated 180 degrees around the x-axis followed by a 180 degrees rotation around the y-axis. The rotation order is z-x-y. This will align this scan:
+
+![mri-coord-system](art/mr_org_coord.png)
+
+so it is aligned for processing and the result is:
+
+![mri-results3](art/mr-head-landmarks3.png)
+
+
 ## How to use the framework in your own code
 
 Detect 3D landmarks in a 3D facial scan
@@ -142,13 +168,13 @@ Start by requesting and downloading the database from [the official BU-3DFE site
 
 Secondly, download the 3D landmarks for the raw data from [Rasmus R. Paulsens homepage](http://people.compute.dtu.dk/rapa/BU-3DFE/BU_3DFE_84_landmarks_rapa.zip). The landmarks from the original BU-3DFE distribution is fitted to the cropped face data. Unfortunately, the raw and cropped face data are not in alignment. The data fra Rasmus' site has been aligned to the raw data, thus making it possible to train and evaluate on the raw face data. There are 84 landmarks in this set end they are defined [here](docs/BU-3DFE_landmark_info.txt).
 
-A set of example JSON configuration files are provided. Use for example config_RGB_BU_3DFE.json and modify it to your needs. Change **raw_data_dir**, **processed_data_dir**, **data_dir** (should be equal to processed_data_dir) to your setup.
+A set of example JSON configuration files are provided. Use for example **configs/BU_3DFE-RGB_train_test.json** and modify it to your needs. Change **raw_data_dir**, **processed_data_dir**, **data_dir** (should be equal to processed_data_dir) to your setup.
 
 ### Preparing the BU-3DFE data
 In order to train the network the data should be prepared. This means that we pre-render a set of views for each input model. On the fly rendering during training is too slow due to the loading of the 3D models. Preparing the data is done by issuing the command:
 
 ```
-python preparedata --c config_RGB_BU_3DFE.json
+python preparedata --c configs/BU_3DFE-RGB_train_test.json
 ```
 
 This will pre-render the image channels **rgb**, **geometry**, **depth**. If the **processed_data_dir** is set to for example **D:\\data\\BU-3DFE_processed\\**, the rendered images will be placed in a folder **D:\\data\\BU-3DFE_processed\\images\\** and the corresponding 2D landmarks in a folder **D:\\data\\BU-3DFE_processed\\2D LM\\**. The renderings should look like this:
@@ -162,7 +188,7 @@ The dataset will also be split into a **training** and a **test** set. The ids o
 ### Training on the BU-3DFE pre-rendered data
 To do the training on the pre-rendered images and landmarks the command
 ```
-python train --c config_RGB_BU_3DFE.json
+python train --c configs/BU_3DFE-RGB_train_test.json
 ```
 is used. The result of the training (the model) will be placed in a folder **saved\\models\\MVLMModel_BU_3DFE\\DDMMYY_HHMMSS\\**, where the **saved** folder can be specified in the JSON configuration file. **DDMMYY_HHMMSS** is the current date and time. A simple training log can be found in **saved\\log\\MVLMModel_BU_3DFE\\DDMMYY_HHMMSS\\**.
 After training, it is recommended to rename and copy the best trained model **best-model.pth** to a suitable location. For example **saved\\trained\\*.
@@ -173,7 +199,7 @@ After training, it is recommended to rename and copy the best trained model **be
 #### Resuming training
 If training is stopped for some reason, it is possible to resume training by using
 ```
-python train --c config_RGB_BU_3DFE.json --r path-to-model\best-model.pth
+python train --c configs/BU_3DFE-RGB_train_test.json --r path-to-model\best-model.pth
 ```
 where **path-to-model** is the path to the current best model (for example **saved\\models\\MVLMModel_BU_3DFE\\DDMMYY_HHMMSS\\**).
 
@@ -181,7 +207,7 @@ where **path-to-model** is the path to the current best model (for example **sav
 ### Evaluating the model trained on the BU-3DFE data
 In order to evaluate the performance of the trained model, the following command is used:
 ```
-python test --c config_RGB_BU_3DFE.json --r path-and-file-name-of-model.pth
+python test --c configs/BU_3DFE-RGB_train_test.json --r path-and-file-name-of-model.pth
 ```
 where **path-and-file-name-of-model.pth** is the path and filename of the model that should be tested. It should match the configuration in the supplied JSON file. Test results will be placed in a folder named **saved\\temp\\MVLMModel_BU_3DFE\\DDMMYY_HHMMSS\\**. Most interesting is the **results.csv** that lists the distance error for each landmark for each test mesh.
 

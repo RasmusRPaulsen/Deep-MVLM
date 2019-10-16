@@ -12,7 +12,7 @@
         }
     },
     "data_loader": {
-        "type": "DTU3DDataLoader",
+        "type": "FaceDataLoader",
         "args":{
             "data_dir": "I:/Data/FaceCNN/CNNData/",
             "heatmap_size": 256,
