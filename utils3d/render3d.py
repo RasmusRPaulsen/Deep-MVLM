@@ -23,6 +23,7 @@ def no_transform():
 class Render3D:
     def __init__(self, config):
         self.config = config
+        self.logger = config.get_logger('Render3D')
 
     def random_transform(self):
         min_x = self.config['process_3d']['min_x_angle']
@@ -685,13 +686,16 @@ class Render3D:
 
         return trans.GetOutput()
 
-    def render_3d_vtk_ply_stl_rgb_geometry_depth(self, transform_stack, file_name):
+    def render_3d_multi_rgb_geometry_depth(self, transform_stack, file_name):
         write_image_files = self.config['process_3d']['write_renderings']
         off_screen_rendering = self.config['process_3d']['off_screen_rendering']
         n_views = self.config['data_loader']['args']['n_views']
         img_size = self.config['data_loader']['args']['image_size']
         win_size = img_size
         slack = 5
+
+        start = time.time()
+        self.logger.debug('Rendering rgb+geometry+depth')
 
         n_channels = 5  # 3 for RGB, 1 for depth and 1 for geometry
         image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
@@ -890,6 +894,9 @@ class Render3D:
             del texture_img
             del texture
         # del texture_image
+        end = time.time()
+        self.logger.debug("File load and rendering time: " + str(end - start))
+
         return image_stack
 
     def render_3d_file(self, file_name):
@@ -923,13 +930,13 @@ class Render3D:
             n_channels = 1
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:1] = image_stack_full[:, :, :, 4:5] / 255
-        elif file_type == ".wrl" and image_channels == "geometry+depth":
-            transformation_stack = self.generate_3d_transformations()
-            image_stack_full = self.render_3d_wrl_rgb_geometry_depth(transformation_stack, file_name)
-            n_channels = 2
-            image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
-            image_stack[:, :, :, 0:1] = image_stack_full[:, :, :, 3:4] / 255
-            image_stack[:, :, :, 1:2] = image_stack_full[:, :, :, 4:5] / 255
+        # elif file_type == ".wrl" and image_channels == "geometry+depth":
+        #    transformation_stack = self.generate_3d_transformations()
+        #    image_stack_full = self.render_3d_wrl_rgb_geometry_depth(transformation_stack, file_name)
+        #    n_channels = 2
+        #    image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
+        #    image_stack[:, :, :, 0:1] = image_stack_full[:, :, :, 3:4] / 255
+        #    image_stack[:, :, :, 1:2] = image_stack_full[:, :, :, 4:5] / 255
         elif file_type == ".wrl" and image_channels == "RGB+depth":
             transformation_stack = self.generate_3d_transformations()
             image_stack_full = self.render_3d_wrl_rgb_geometry_depth(transformation_stack, file_name)
@@ -961,41 +968,43 @@ class Render3D:
             image_stack[:, :, :, 1:2] = image_stack_depth / 255
         elif (file_type == ".vtk" or file_type == ".stl" or file_type == ".ply") and image_channels == "RGB":
             transformation_stack = self.generate_3d_transformations()
-            image_stack_full = self.render_3d_vtk_ply_stl_rgb_geometry_depth(
+            image_stack_full = self.render_3d_multi_rgb_geometry_depth(
                 transformation_stack, file_name)
             n_channels = 3
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:3] = image_stack_full[:, :, :, 0:3] / 255
         elif (file_type == ".vtk" or file_type == ".stl" or file_type == ".ply") and image_channels == "geometry":
             transformation_stack = self.generate_3d_transformations()
-            image_stack_full = self.render_3d_vtk_ply_stl_rgb_geometry_depth(
+            image_stack_full = self.render_3d_multi_rgb_geometry_depth(
                 transformation_stack, file_name)
             n_channels = 1
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:1] = image_stack_full[:, :, :, 3:4] / 255
-        elif (file_type == ".vtk" or file_type == ".stl" or file_type == ".ply") and image_channels == "depth":
+        # elif (file_type == ".vtk" or file_type == ".stl" or file_type == ".ply") and image_channels == "depth":
+        elif (file_type in [".vtk", ".stl", ".ply"]) and image_channels == "depth":
             transformation_stack = self.generate_3d_transformations()
-            image_stack_full = self.render_3d_vtk_ply_stl_rgb_geometry_depth(
+            image_stack_full = self.render_3d_multi_rgb_geometry_depth(
                 transformation_stack, file_name)
             n_channels = 1
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:1] = image_stack_full[:, :, :, 4:5] / 255
         elif (file_type == ".vtk" or file_type == ".stl" or file_type == ".ply") and image_channels == "RGB+depth":
             transformation_stack = self.generate_3d_transformations()
-            image_stack_full = self.render_3d_vtk_ply_stl_rgb_geometry_depth(
+            image_stack_full = self.render_3d_multi_rgb_geometry_depth(
                 transformation_stack, file_name)
             n_channels = 4
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:3] = image_stack_full[:, :, :, 0:3] / 255
             image_stack[:, :, :, 3:4] = image_stack_full[:, :, :, 4:5] / 255
-        elif (file_type == ".vtk" or file_type == ".stl" or file_type == ".ply") and image_channels == "geometry+depth":
+        # elif (file_type == ".vtk" or file_type == ".stl" or file_type == ".ply" or file_type == ".wrl") and image_channels == "geometry+depth":
+        elif (file_type in [".vtk", ".stl", ".ply", ".wrl"]) and image_channels == "geometry+depth":
             transformation_stack = self.generate_3d_transformations()
-            image_stack_full = self.render_3d_vtk_ply_stl_rgb_geometry_depth(
+            image_stack_full = self.render_3d_multi_rgb_geometry_depth(
                 transformation_stack, file_name)
             n_channels = 2
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:1] = image_stack_full[:, :, :, 3:4] / 255
-            image_stack[:, :, :, 1:2] = image_stack_full[:, :, :, 5:6] / 255
+            image_stack[:, :, :, 1:2] = image_stack_full[:, :, :, 4:5] / 255
         else:
             print("Can not render filetype ", file_type, " using image_channels ", image_channels)
 

@@ -313,7 +313,7 @@ def test_on_dtu_3d(config):
 
 
 def test_on_bu_3d_fe(config):
-    test_set_file = config['data_loader']['args']['data_dir'] + '/dataset_train.txt'  # TODO Change to test set
+    test_set_file = config['data_loader']['args']['data_dir'] + '/dataset_test.txt'
     # test_set_file = config['data_loader']['args']['data_dir'] + '/face_dataset_debug.txt'
     result_file = config.temp_dir / 'results.csv'
 
