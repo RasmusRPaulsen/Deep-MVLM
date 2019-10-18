@@ -36,7 +36,7 @@ class Render3D:
         rx = np.double(np.random.randint(min_x, max_x, 1))
         ry = np.double(np.random.randint(min_y, max_y, 1))
         rz = np.double(np.random.randint(min_z, max_z, 1))
-        # TODO the following values are not used
+        # the following values are currently not used
         scale = np.double(np.random.uniform(1.4, 1.9, 1))
         tx = np.double(np.random.randint(-20, 20, 1))
         ty = np.double(np.random.randint(-20, 20, 1))
@@ -315,6 +315,39 @@ class Render3D:
 
         return image_stack
 
+    def compute_pre_transformation(self, file_name):
+        translation = [0, 0, 0]
+        if self.config['pre-align']['align_center_of_mass']:
+            # hack to avoid how the objimporter deals with multiple polydata
+            pd = Utils3D.multi_read_surface(file_name)
+            if pd.GetNumberOfPoints() < 1:
+                print('Could not read', file_name)
+                return None
+
+            vtk_cm = vtk.vtkCenterOfMass()
+            vtk_cm.SetInputData(pd)
+            vtk_cm.SetUseScalarsAsWeights(False)
+            vtk_cm.Update()
+            cm = vtk_cm.GetCenter()
+            translation = [-cm[0], -cm[1], -cm[2]]
+
+        t = vtk.vtkTransform()
+        t.Identity()
+
+        rx = self.config['pre-align']['rot_x']
+        ry = self.config['pre-align']['rot_y']
+        rz = self.config['pre-align']['rot_z']
+        s = self.config['pre-align']['scale']
+
+        # t.Scale(s, s, s)
+        t.RotateY(ry)
+        t.RotateX(rx)
+        t.RotateZ(rz)
+        t.Translate(translation)
+        t.Update()
+
+        return t
+
     def render_3d_obj_rgb(self, transform_stack, file_name):
         write_image_files = self.config['process_3d']['write_renderings']
         off_screen_rendering = self.config['process_3d']['off_screen_rendering']
@@ -363,6 +396,8 @@ class Render3D:
             actor = actors.GetNextItem()
         del props
 
+        t_pre_trans = self.compute_pre_transformation(file_name)
+
         t = vtk.vtkTransform()
         t.Identity()
         t.Update()
@@ -387,6 +422,7 @@ class Render3D:
             t.RotateY(ry)
             t.RotateX(rx)
             t.RotateZ(rz)
+            t.Concatenate(t_pre_trans)
             t.Update()
 
             xmin = -150
@@ -398,7 +434,9 @@ class Render3D:
 
             cx = 0
             cy = 0
-            extend_factor = 1.0
+            # extend_factor = 1.0
+            s = self.config['pre-align']['scale']
+            extend_factor = 1.0 / s
             # The side length of the view frustrum which is rectangular since we use a parallel projection
             side_length = max([xlen, ylen]) * extend_factor
             # zoom_factor = win_size / side_length
@@ -695,7 +733,7 @@ class Render3D:
         slack = 5
 
         start = time.time()
-        self.logger.debug('Rendering rgb+geometry+depth')
+        self.logger.debug('Rendering')
 
         n_channels = 5  # 3 for RGB, 1 for depth and 1 for geometry
         image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
@@ -912,38 +950,6 @@ class Render3D:
             transformation_stack = self.generate_3d_transformations()
             image_stack = self.render_3d_obj_rgb(transformation_stack, file_name)
             image_stack = image_stack / 255
-        # elif file_type == ".wrl" and image_channels == "RGB":
-        #    transformation_stack = self.generate_3d_transformations()
-        #    image_stack_full = self.render_3d_wrl_rgb_geometry_depth(transformation_stack, file_name)
-        #    n_channels = 3
-        #    image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
-        #    image_stack[:, :, :, 0:3] = image_stack_full[:, :, :, 0:3] / 255
-        # elif file_type == ".wrl" and image_channels == "geometry":
-        #    transformation_stack = self.generate_3d_transformations()
-        #    image_stack_full = self.render_3d_wrl_rgb_geometry_depth(transformation_stack, file_name)
-        #    n_channels = 1
-        #    image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
-        #    image_stack[:, :, :, 0:1] = image_stack_full[:, :, :, 3:4] / 255
-        # elif file_type == ".wrl" and image_channels == "depth":
-        #    transformation_stack = self.generate_3d_transformations()
-        #    image_stack_full = self.render_3d_wrl_rgb_geometry_depth(transformation_stack, file_name)
-        #    n_channels = 1
-        #    image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
-        #    image_stack[:, :, :, 0:1] = image_stack_full[:, :, :, 4:5] / 255
-        # elif file_type == ".wrl" and image_channels == "geometry+depth":
-        #    transformation_stack = self.generate_3d_transformations()
-        #    image_stack_full = self.render_3d_wrl_rgb_geometry_depth(transformation_stack, file_name)
-        #    n_channels = 2
-        #    image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
-        #    image_stack[:, :, :, 0:1] = image_stack_full[:, :, :, 3:4] / 255
-        #    image_stack[:, :, :, 1:2] = image_stack_full[:, :, :, 4:5] / 255
-        # elif file_type == ".wrl" and image_channels == "RGB+depth":
-        #   transformation_stack = self.generate_3d_transformations()
-        #    image_stack_full = self.render_3d_wrl_rgb_geometry_depth(transformation_stack, file_name)
-        #    n_channels = 4
-        #    image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
-        #    image_stack[:, :, :, 0:3] = image_stack_full[:, :, :, 0:3] / 255
-        #    image_stack[:, :, :, 3:4] = image_stack_full[:, :, :, 4:5] / 255
         elif file_type == ".obj" and image_channels == "geometry":
             transformation_stack = self.generate_3d_transformations()
             image_stack = self.render_3d_obj_geometry(transformation_stack, file_name) / 255

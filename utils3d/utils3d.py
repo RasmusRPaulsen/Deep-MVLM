@@ -11,6 +11,7 @@ class Utils3D:
         self.lm_start = None
         self.lm_end = None
         self.landmarks = None
+        self.logger = config.get_logger('Utils3D')
 
     def read_heatmap_maxima(self, dir_name=None):
         if dir_name is None:
@@ -261,7 +262,7 @@ class Utils3D:
                     used_lines = n_inliners
 
         if used_lines == -1:
-            print('Ransac failed - estimating from all lines')
+            self.logger.warning('Ransac failed - estimating from all lines')
             best_p = self.compute_intersection_between_lines(pa, pb)
         # else:
         # print('Ransac error ', best_error, ' with ', used_lines, ' lines')
@@ -379,7 +380,7 @@ class Utils3D:
                 texture_image.Update()
                 return texture_image.GetOutput()
             elif file_extension == ".jpg":
-                texture_image = vtk.vtkJPGReader()
+                texture_image = vtk.vtkJPEGReader()
                 texture_image.SetFileName(texture_file_name)
                 texture_image.Update()
                 return texture_image.GetOutput()
