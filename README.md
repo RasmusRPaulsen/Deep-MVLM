@@ -161,12 +161,19 @@ The following examples use data from external sources.
 Placing landmarks on an a scan produced using an [Artec3D Eva 3D scanner](https://www.artec3d.com/portable-3d-scanners/artec-eva) can be done like this:
 
 - download the example [head scan](https://www.artec3d.com/3d-models/face) in .obj formats
-
-then do:
+- then:
 ```
 python predict.py --c configs\DTU3D-RGB_Artec3D.json --n Pasha_guard_head.obj
 ```
 ![Artec3D](art/artec3d-eva-pasha.png)
+
+- download the example [man bust](https://www.artec3d.com/3d-models/head) in .obj formats
+- then:
+```
+python predict.py --c configs\DTU3D-depth.json --n man_bust.obj
+```
+![Artec3D](art/artec3d-man-bust.png)
+
 
 ### Using Multiple GPUs
 

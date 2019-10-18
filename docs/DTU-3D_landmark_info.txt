@@ -1,4 +1,4 @@
-1; Right eyebrow lateral point,
+1; Right eyebrow lateral point
 2; Right eyebrow upper
 3; Right eyebrow upper
 4; Right eyebrow upper

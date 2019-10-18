@@ -1091,34 +1091,38 @@ class Render3D:
         ren_win.AddRenderer(ren)
         ren_win.SetSize(win_size, win_size)
 
+        file_read = False
         if file_type == ".obj":
             mtl_name = os.path.splitext(mesh_name)[0] + '.mtl'
-            obj_dir = os.path.dirname(mesh_name)
-            obj_in = vtk.vtkOBJImporter()
-            obj_in.SetFileName(mesh_name)
+            # only do this for textured files
             if os.path.isfile(mtl_name):
-                obj_in.SetFileNameMTL(mtl_name)
-                obj_in.SetTexturePath(obj_dir)
-            obj_in.Update()
+                obj_dir = os.path.dirname(mesh_name)
+                obj_in = vtk.vtkOBJImporter()
+                obj_in.SetFileName(mesh_name)
+                if os.path.isfile(mtl_name):
+                    obj_in.SetFileNameMTL(mtl_name)
+                    obj_in.SetTexturePath(obj_dir)
+                obj_in.Update()
 
-            obj_in.SetRenderWindow(ren_win)
-            obj_in.Update()
+                obj_in.SetRenderWindow(ren_win)
+                obj_in.Update()
 
-            props = vtk.vtkProperty()
-            props.SetColor(1, 1, 1)
-            props.SetDiffuse(0)
-            props.SetSpecular(0)
-            props.SetAmbient(1)
+                props = vtk.vtkProperty()
+                props.SetColor(1, 1, 1)
+                props.SetDiffuse(0)
+                props.SetSpecular(0)
+                props.SetAmbient(1)
 
-            actors = ren.GetActors()
-            actors.InitTraversal()
-            actor = actors.GetNextItem()
-            while actor:
-                actor.SetProperty(props)
+                actors = ren.GetActors()
+                actors.InitTraversal()
                 actor = actors.GetNextItem()
-            del props
+                while actor:
+                    actor.SetProperty(props)
+                    actor = actors.GetNextItem()
+                del props
+                file_read = True
 
-        if file_type == ".vtk" or file_type == ".stl" or file_type == ".ply" or file_type == ".wrl":
+        if not file_read and file_type in [".vtk", ".stl", ".ply", ".wrl", ".obj"]:
             pd = Utils3D.multi_read_surface(mesh_name)
             if pd.GetNumberOfPoints() < 1:
                 print('Could not read', mesh_name)
