@@ -39,7 +39,7 @@ The code has been tested under Windows 10 both with a GPU enabled (Titan X) comp
 
 
 ## Getting started
-The easiset way to use Deep-MVLM is to use the pre-trained models to place landmarks on your meshes. To place the DTU-3D landmarks on a mesh try:
+The easiset way to use Deep-MVLM is to use the pre-trained models to place landmarks on your meshes. To place the (DTU-3D)[https://bmcmedimaging.biomedcentral.com/articles/10.1186/1471-2342-14-35] landmarks on a mesh try:
 
 ```
 python predict.py --c configs/DTU3D-RGB.json --n assets/testmeshA.obj
@@ -69,7 +69,7 @@ The type of 3D rendering used is specified in the **image_channels** setting in 
 
 ### Pre-trained networks
 
-The algorithm comes with pre-trained networks for the landmark sets **DTU3D** consisting of 73 landmarks that are described **TBD** and the landmark set from **BU-3DFE** described further down.
+The algorithm comes with pre-trained networks for the landmark sets **DTU3D** consisting of 73 landmarks that are described in this [paper](https://bmcmedimaging.biomedcentral.com/articles/10.1186/1471-2342-14-35) and [here](docs/DTU-3D_landmark_info.txt) and the landmark set from **BU-3DFE** described further down.
 
 ## Predict landmarks on a single scan
 
@@ -152,6 +152,21 @@ dm.visualise_mesh_and_landmarks(file_name, landmarks)
 The full source (including how to read the JSON config files) is [predict.py](predict.py)
 
 
+## Examples
+
+The following examples use data from external sources.
+
+### Artec3D Eva example
+
+Placing landmarks on an a scan produced using an [Artec3D Eva 3D scanner](https://www.artec3d.com/portable-3d-scanners/artec-eva) can be done like this:
+
+- download the example [head scan](https://www.artec3d.com/3d-models/face) in .obj formats
+
+then do:
+```
+python predict.py --c configs\DTU3D-RGB_Artec3D.json --n Pasha_guard_head.obj
+```
+![Artec3D](art/artec3d-eva-pasha.png)
 
 ### Using Multiple GPUs
 
@@ -160,6 +175,7 @@ Multi-GPU training and evaluation can be used by setting `n_gpu` argument of the
 python train.py --device 2,3 --c config.json
 ```
 The program check if a GPU is present and if it has the required CUDA capabilities (3.5 and up). If not, the CPU is used - will be slow but still works.
+
 
 ## How to train and use Deep-MVLM with the BU-3DFE dataset
 

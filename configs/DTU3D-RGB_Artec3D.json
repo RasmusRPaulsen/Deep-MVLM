@@ -76,10 +76,10 @@
     },
 	"pre-align": {
 		"align_center_of_mass" : false,
-		"rot_x": 0,
+		"rot_x": -90,
 		"rot_y": 0,
 		"rot_z": 0,
 		"scale": 1,
-		"write_pre_aligned": false
+		"write_pre_aligned": true
 	}
 }

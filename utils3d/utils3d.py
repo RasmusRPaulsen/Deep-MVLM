@@ -340,7 +340,7 @@ class Utils3D:
             pd = pd_in.GetOutput()
             return pd
         elif file_extension == ".ply":
-            pd_in = vtk.vtkSTLReader()
+            pd_in = vtk.vtkPLYReader()
             pd_in.SetFileName(file_name)
             pd_in.Update()
             pd = pd_in.GetOutput()

@@ -1,0 +1,72 @@
+1; Right eyebrow lateral point,
+2; Right eyebrow upper
+3; Right eyebrow upper
+4; Right eyebrow upper
+5; Right eyebrow medial point
+6; Right eyebrow lower
+7; Right eyebrow lower
+8; Right eyebrow lower
+9; Left eyebrow lateral point
+10; Left eyebrow lower
+11; Left eyebrow lower
+12; Left eyebrow lower
+13; Left eyebrow medial point
+14; Left eyebrow upper
+15; Left eyebrow upper
+16; Left eyebrow upper
+17; Right eye lateral canthus
+18; Right eye upper
+19; Right eye upper
+20; Right eye upper
+21; Right eye medial canthus
+22; Right eye lower
+23; Right eye lower
+24; Right eye lower
+25; Left eye lateral canthus
+26; Left eye lower
+27; Left eye lower
+28; Left eye lower
+29; Left eye medial canthus
+30; Right eye upper
+31; Right eye upper
+32; Right eye upper
+33; Right pupil center
+34; Left pupil center
+35; Nose
+36; Nose
+37; The outer left alar-facial groove
+38; The inner left alar-labial groove
+39; Nose
+40; The columellars connection to the upper lip
+41; Nose
+42; The inner right alar-labial groove
+43; The outer right alar-facial groove
+44; Nose
+46; Tip of the nose
+47; Right oral commissure
+48; Upper lip 
+49; The right philtrum column connection to the the vermillion border
+50; Midpoint on the cupid’s bow
+51; The left philtrum column connection to the the vermillion border
+52; Upper lip 
+53; Left oral commissure
+54; Lower lip 
+55; Lower lip 
+56; Lower lip 
+57; Mouth
+58; Mouth
+59; Mouth
+60; Mouth
+61; Mouth
+62; Mouth
+63; Right ear attachment
+64; Right jaw
+65; Right jaw
+66; Right jaw
+67; Right jaw
+68; Lowest point of the central jaw
+69; Left jaw
+70; Left jaw
+71; Left jaw
+72; Left jaw
+73; Left ear attachment 
