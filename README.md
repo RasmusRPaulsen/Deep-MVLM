@@ -172,7 +172,7 @@ python predict.py --c configs\DTU3D-RGB_Artec3D.json --n Pasha_guard_head.obj
 ```
 python predict.py --c configs\DTU3D-depth.json --n man_bust.obj
 ```
-![Artec3D](art/artec3d-man-bust.png)
+![Artec3D](art/artec3d-eva-man-bust.png)
 
 
 ### Using Multiple GPUs

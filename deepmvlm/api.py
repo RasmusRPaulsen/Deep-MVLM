@@ -22,7 +22,9 @@ models_urls = {
         'https://shapeml.compute.dtu.dk/deep-mvlm/models/MVLMModel_BU_3DFE_geometry_02102019_4epoch-052ee4b0.pth',
     'MVLMModel_BU_3DFE-RGB+depth':
         'https://shapeml.compute.dtu.dk/deep-mvlm/models/MVLMModel_BU_3DFE_RGB+depth_05102019_5epoch-90e29350.pth',
-}
+    'MVLMModel_BU_3DFE-geometry+depth':
+        'https://shapeml.compute.dtu.dk/deep-mvlm/models/MVLMModel_BU_3DFE_geometry+depth_17102019_13epoch-eb18dce4',
+  }
 
 
 class DeepMVLM:

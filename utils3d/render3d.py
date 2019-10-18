@@ -337,7 +337,8 @@ class Render3D:
         rx = self.config['pre-align']['rot_x']
         ry = self.config['pre-align']['rot_y']
         rz = self.config['pre-align']['rot_z']
-        s = self.config['pre-align']['scale']
+        # Scale is handling by doing magic with the view frustrum elsewhere
+        # s = self.config['pre-align']['scale']
 
         # t.Scale(s, s, s)
         t.RotateY(ry)
