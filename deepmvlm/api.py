@@ -12,6 +12,8 @@ models_urls = {
         'https://shapeml.compute.dtu.dk/deep-mvlm/models/MVLMModel_DTU3D_Depth_19092019-ad636c81.pth',
     'MVLMModel_DTU3D-geometry':
         'https://shapeml.compute.dtu.dk/deep-mvlm/models/MVLMModel_DTU3D_geometry-9d2feee6.pth',
+    'MVLMModel_DTU3D-geometry+depth':
+        'https://shapeml.compute.dtu.dk/deep-mvlm/MVLMModel_DTU3D_geometry+depth_20102019_15epoch-c2388595.pth',
     'MVLMModel_DTU3D-RGB+depth':
         'https://shapeml.compute.dtu.dk/deep-mvlm/models/MVLMModel_DTU3D_RGB+depth_20092019-7fc1d845.pth',
     'MVLMModel_BU_3DFE-RGB':

@@ -42,6 +42,7 @@
 42; The inner right alar-labial groove
 43; The outer right alar-facial groove
 44; Nose
+45; Nose
 46; Tip of the nose
 47; Right oral commissure
 48; Upper lip 

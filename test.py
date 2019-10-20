@@ -14,6 +14,7 @@ import shutil
 from scipy.spatial import distance
 import math
 import vtk
+import sys
 
 
 def get_working_device(config):
@@ -254,8 +255,31 @@ def visualise_landmarks_as_spheres_with_accuracy(gt_lm, pred_lm, file_out):
     del append
 
 
+def write_lm_names_to_result_file(res_f):
+    lm_name_file = os.path.dirname(sys.argv[0]) + "/docs/DTU-3D_landmark_info.txt"
+    lm_names = []
+    with open(lm_name_file) as f:
+        for line in f:
+            line = line.strip("/n")
+            line = line.strip("\n")
+            line = line.rstrip()
+            t = np.array(line.split(';'))
+            lm_names.append(t)
+            # clean_name = os.path.splitext(line)[0]
+            #if len(clean_name) > 0:
+                #files.append(clean_name)
+    for lm in lm_names:
+        idx = lm[0]
+        res_f.write(', ' + str(idx))
+    res_f.write('\n')
+    for lm in lm_names:
+        name = lm[1]
+        res_f.write(', ' + name)
+    res_f.write('\n')
+    res_f.flush()
+
 def test_on_dtu_3d(config):
-    test_set_file = config['data_loader']['args']['data_dir'] + '/face_dataset_full.txt'
+    test_set_file = config['data_loader']['args']['data_dir'] + '/dataset_test.txt'
     # test_set_file = config['data_loader']['args']['data_dir'] + '/face_dataset_debug.txt'
     result_file = config.temp_dir / 'results.csv'
 
@@ -270,8 +294,10 @@ def test_on_dtu_3d(config):
                 files.append(clean_name)
     print('Read', len(files), 'files to run test on')
 
+    start_time = time.time()
     idx = 0
     res_f = open(result_file, "w")
+    write_lm_names_to_result_file(res_f)
     for f_name in files:
         # The ´ someone put in front of filenames is equal to \xB4
         lm_name = config['data_loader']['args']['data_dir'] + "/annoexport/\xB4" + f_name + '.anno'
@@ -308,6 +334,11 @@ def test_on_dtu_3d(config):
             sphere_file = config.temp_dir / (f_name + '_landmarkAccuracy.vtk')
             visualise_landmarks_as_spheres_with_accuracy(gt_lms, pred_lms, str(sphere_file))
             idx = idx + 1
+
+            time_per_test = (time.time()-start_time) / idx
+            time_left = (len(files) - idx) * time_per_test
+            print('Time per test', str(datetime.timedelta(seconds=time_per_test)),
+                                       ' time left in test: ', str(datetime.timedelta(seconds=time_left)))
         else:
             print('File', obj_name, ' does not exists')
 
@@ -383,8 +414,8 @@ def main(config):
     # file_name = 'D:/Data/temp/20130715150920_standard.obj'
     # file_name = 'D:/Data/temp/20121105144354_standard.obj'
     # predict_one_subject(config, file_name)
-    # test_on_dtu_3d(config)
-    test_on_bu_3d_fe(config)
+    test_on_dtu_3d(config)
+    # test_on_bu_3d_fe(config)
 
 
 if __name__ == '__main__':
