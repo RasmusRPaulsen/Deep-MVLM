@@ -39,7 +39,7 @@ The code has been tested under Windows 10 both with a GPU enabled (Titan X) comp
 
 
 ## Getting started
-The easiset way to use Deep-MVLM is to use the pre-trained models to place landmarks on your meshes. To place the (DTU-3D)[https://bmcmedimaging.biomedcentral.com/articles/10.1186/1471-2342-14-35] landmarks on a mesh try:
+The easiset way to use Deep-MVLM is to use the pre-trained models to place landmarks on your meshes. To place the [DTU-3D](https://bmcmedimaging.biomedcentral.com/articles/10.1186/1471-2342-14-35) landmarks on a mesh try:
 
 ```
 python predict.py --c configs/DTU3D-RGB.json --n assets/testmeshA.obj
