@@ -14,7 +14,7 @@
     "data_loader": {
         "type": "FaceDataLoader",
         "args":{
-            "data_dir": "I:/Data/FaceCNN/CNNData/",
+            "data_dir": "",
             "heatmap_size": 256,
             "image_size": 256,
             "image_channels": "RGB",
@@ -60,7 +60,7 @@
         "filter_view_lines": "quantile",
         "heatmap_max_quantile": 0.5,
         "heatmap_abs_threshold": 0.5,
-        "write_renderings": true,
+        "write_renderings": false,
         "off_screen_rendering": true,
         "min_x_angle": -40,
         "max_x_angle": 40,

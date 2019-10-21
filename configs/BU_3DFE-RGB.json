@@ -12,9 +12,9 @@
         }
     },
     "data_loader": {
-        "type": "DTU3DDataLoader",
+        "type": "FaceDataLoader",
         "args":{
-            "data_dir": "I:/Data/FaceCNN/BU_3DFE_processed/",
+            "data_dir": "",
             "heatmap_size": 256,
             "image_size": 256,
             "image_channels": "RGB",
@@ -70,8 +70,8 @@
         "max_z_angle": 20
     },
     "preparedata": {
-        "raw_data_dir": "I:/Data/BU_3DFE/",
-        "processed_data_dir": "I:/Data/FaceCNN/BU_3DFE_processed/",
+        "raw_data_dir": "",
+        "processed_data_dir": "",
         "off_screen_rendering": true
     },
 	"pre-align": {

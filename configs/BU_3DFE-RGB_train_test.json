@@ -14,7 +14,7 @@
     "data_loader": {
         "type": "FaceDataLoader",
         "args":{
-            "data_dir": "I:/Data/FaceCNN/BU_3DFE_processed/",
+            "data_dir": "Data/FaceCNN/BU_3DFE_processed/",
             "heatmap_size": 256,
             "image_size": 256,
             "image_channels": "RGB",
@@ -70,8 +70,8 @@
         "max_z_angle": 40
 		},
     "preparedata": {
-        "raw_data_dir": "I:/Data/BU_3DFE/",
-        "processed_data_dir": "I:/Data/FaceCNN/BU_3DFE_processed/",
+        "raw_data_dir": "Data/FaceCNN/BU_3DFE/",
+        "processed_data_dir": "Data/FaceCNN/BU_3DFE_processed/",
         "off_screen_rendering": true
     },
 	"pre-align": {

@@ -1,14 +1,14 @@
 {
-    "name": "MVLMModel_DTU3D",
+    "name": "MVLMModel_BU_3DFE",
     "n_gpu": 1,
 
     "arch": {
         "type": "MVLMModel",
         "args": {
-            "n_landmarks": 73,
+            "n_landmarks": 84,
             "n_features": 256,
             "dropout_rate": 0.2,
-            "image_channels": "depth"
+            "image_channels": "geometry+depth"
         }
     },
     "data_loader": {
@@ -17,7 +17,7 @@
             "data_dir": "",
             "heatmap_size": 256,
             "image_size": 256,
-            "image_channels": "depth",
+            "image_channels": "geometry+depth",
             "n_views": 96,
             "batch_size": 8,
             "shuffle": true,
@@ -54,13 +54,13 @@
         "monitor": "min val_loss",
         "early_stop": 10,
 
-        "tensorboard": false
+        "tensorboard": true
     },
     "process_3d": {
         "filter_view_lines": "quantile",
         "heatmap_max_quantile": 0.5,
         "heatmap_abs_threshold": 0.5,
-        "write_renderings": true,
+        "write_renderings": false,
         "off_screen_rendering": true,
         "min_x_angle": -40,
         "max_x_angle": 40,
@@ -75,11 +75,11 @@
         "off_screen_rendering": true
     },
 	"pre-align": {
-		"align_center_of_mass" : true,
+		"align_center_of_mass" : false,
 		"rot_x": 0,
 		"rot_y": 0,
-		"rot_z": 180,
+		"rot_z": 0,
 		"scale": 1,
-		"write_pre_aligned": true
+		"write_pre_aligned": false
 	}
 }

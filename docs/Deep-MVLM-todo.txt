@@ -1,16 +1,11 @@
+Preproces
+ - use pre-transformation in the BU-3DFE prepare data code
 
 Logging:
  - be stringent in using the logging tool
 
-Training
- - train and evaluate models on DTU-3D: geometry+depth
- - train and evaluate models on BU-3DFE: geometry+depth
- 
 Test both DTU-3D and BU-3DFE on test sets 
- 
-Pre-translation and rotation
- - find smart way to pre-align and pre rotate models 
- 
+
 GitHub
  - put file description in header (Kristine credits) (http://web.archive.org/web/20111010053227/http://jaynes.colorado.edu/PythonGuidelines.html#module_formatting)
  
