@@ -162,8 +162,8 @@ class Trainer(BaseTrainer):
                 loss = self.loss(output, target)
 
                 # self.writer.set_step((epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')
-                if self.writer is not None:
-                    self.writer.writer.add_scalar('validation/loss', loss.item())
+                # if self.writer is not None:
+                #    self.writer.writer.add_scalar('validation/loss', loss.item())
                 total_val_loss += loss.item()
 
                 time_per_test = (time.time() - start_time) / (batch_idx + 1)
@@ -184,6 +184,10 @@ class Trainer(BaseTrainer):
         # add histogram of model parameters to the tensorboard
         # for name, p in self.model.named_parameters():
         #    self.writer.add_histogram(name, p, bins='auto')
+
+        if self.writer is not None:
+            avg_val_loss = total_val_loss / len(self.valid_data_loader)
+            self.writer.writer.add_scalar('validation/loss', avg_val_loss, epoch)
 
         return {
             'val_loss': total_val_loss / len(self.valid_data_loader),

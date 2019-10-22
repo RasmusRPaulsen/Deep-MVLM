@@ -80,13 +80,13 @@ def get_device_and_load_model_old(config):
 def get_device_and_load_model(config):
     logger = config.get_logger('test')
 
-    print('Initialising model')
+    logger.debug('Initialising model')
     model = config.initialize('arch', module_arch)
     # logger.info(model)
 
     if config.resume is None:
-        print('Expecting model to be specified using the --r flag')
-        return  None, None
+        logger.error('Expecting model to be specified using the --r flag')
+        return None, None
 
     check_point_name = str(config.resume)
 
@@ -99,6 +99,9 @@ def get_device_and_load_model(config):
     if config['n_gpu'] > 1 and device == torch.device('cuda'):
         model = torch.nn.DataParallel(model)
     model.load_state_dict(state_dict)
+
+    epochs = checkpoint['epoch']
+    logger.debug('Model was trained for ' + str(epochs) + ' epochs')
 
     # prepare model for predicting
     model = model.to(device)
