@@ -1,3 +1,6 @@
+File  I:/Data/FaceCNN/CNNData/images\V00171112709606_20-07-2011_asd_31_zbuffer.png  raises exception
+ValueError
+
 Preproces
  - use pre-transformation in the BU-3DFE prepare data code
 
