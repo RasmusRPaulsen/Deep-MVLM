@@ -387,7 +387,7 @@ class Utils3D:
 
         return None
 
-    # TODO this is also presnet in render3D - should probably be merged
+    # TODO this is also present in render3D - should probably be merged
     def apply_pre_transformation(self, pd):
         translation = [0, 0, 0]
         if self.config['pre-align']['align_center_of_mass']:

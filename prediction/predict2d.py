@@ -84,7 +84,8 @@ class Predict2D:
                     value = 0
                 # if lm_no == 0:
                 # print('LM value and pos', lm_no, value, px, py)
-                # name_hm_maxima = self.config.temp_dir / ('hm_maxima' + str(cur_id + idx) + '_LM_' + str(lm_no) + '.png')
+                # name_hm_maxima = self.config.temp_dir /
+                # ('hm_maxima' + str(cur_id + idx) + '_LM_' + str(lm_no) + '.png')
                 # imageio.imwrite(name_hm_maxima, heatmaps[idx, lm_no, :, :])
                 heatmap_maxima[lm_no, cur_id + idx, :] = (px, py, value)
                 if write_heatmaps:
@@ -208,8 +209,6 @@ class Predict2D:
             # data = torch.from_numpy(image_stack)
             data = data.permute(0, 3, 1, 2)  # from NHWC to NCHW
 
-            # TODO: Should be done at load time - due to different scaling of channels
-            # data = data / 255
             with torch.no_grad():
                 # print('predicting heatmaps for batch ', cur_id, ' to ', cur_id + batch_size)
                 data = data.to(self.device)

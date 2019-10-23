@@ -28,8 +28,6 @@ class FaceDataset(Dataset):
                 line = line.strip("\n")
                 if len(line) > 0:
                     self.file_ids.append(line)
-        # Use semicolon as delimiter since some file names have comma
-        # self.file_ids_frame = pd.read_csv(csv_file, sep=';')
         # TODO: remove debug print
         print('Read ', len(self.file_ids), ' file ids')
 
