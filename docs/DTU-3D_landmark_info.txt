@@ -47,7 +47,7 @@
 47; Right oral commissure
 48; Upper lip 
 49; The right philtrum column connection to the the vermillion border
-50; Midpoint on the cupid’s bow
+50; Midpoint on the cupids bow
 51; The left philtrum column connection to the the vermillion border
 52; Upper lip 
 53; Left oral commissure
