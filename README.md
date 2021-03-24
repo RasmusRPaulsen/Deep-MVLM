@@ -18,6 +18,9 @@ If you use Deep-MVLM in your research, please cite the
 }
 ```
 
+## Updates
+- 24-03-2021 : Hopefully the "cannot instantiate 'WindowsPath'" issue should now be solved. Pre-trained models no longer contain path variables. 
+
 ## Getting Deep-MVLM
 
 Download or clone from github

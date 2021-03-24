@@ -4,8 +4,33 @@ from utils3d import Utils3D
 from utils3d import Render3D
 from prediction import Predict2D
 from torch.utils.model_zoo import load_url
+# import os
 
 models_urls = {
+    'MVLMModel_DTU3D-RGB':
+        'https://shapeml.compute.dtu.dk/Deep-MVLM/models/MVLMModel_DTU3D_RGB_07092019_only_state_dict-c0255a70.pth',
+    'MVLMModel_DTU3D-depth':
+        'https://shapeml.compute.dtu.dk/Deep-MVLM/models/MVLMModel_DTU3D_Depth_19092019_only_state_dict-95b89b63.pth',
+    'MVLMModel_DTU3D-geometry':
+        'https://shapeml.compute.dtu.dk/Deep-MVLM/models/MVLMModel_DTU3D_geometry_only_state_dict-41851074.pth',
+    'MVLMModel_DTU3D-geometry+depth':
+        'https://shapeml.compute.dtu.dk/Deep-MVLM/models/MVLMModel_DTU3D_geometry+depth_20102019_15epoch_only_state_dict-73b20e31.pth',
+    'MVLMModel_DTU3D-RGB+depth':
+        'https://shapeml.compute.dtu.dk/Deep-MVLM/models/MVLMModel_DTU3D_RGB+depth_20092019_only_state_dict-e3c12463a9.pth',
+    'MVLMModel_BU_3DFE-RGB':
+        'https://shapeml.compute.dtu.dk/Deep-MVLM/models/MVLMModel_BU_3DFE_RGB_24092019_6epoch_only_state_dict-eb652074.pth',
+    'MVLMModel_BU_3DFE-depth':
+        'https://shapeml.compute.dtu.dk/Deep-MVLM/models/MVLMModel_BU_3DFE_depth_10102019_4epoch_only_state_dict-e2318093.pth',
+    'MVLMModel_BU_3DFE-geometry':
+        'https://shapeml.compute.dtu.dk/Deep-MVLM/models/MVLMModel_BU_3DFE_geometry_02102019_4epoch-only_state_dict-f85518fa.pth',
+    'MVLMModel_BU_3DFE-RGB+depth':
+        'https://shapeml.compute.dtu.dk/Deep-MVLM/models/MVLMModel_BU_3DFE_RGB+depth_05102019_5epoch_only_state_dict-297955f6.pth',
+    'MVLMModel_BU_3DFE-geometry+depth':
+        'https://shapeml.compute.dtu.dk/Deep-MVLM/models/MVLMModel_BU_3DFE_geometry+depth_17102019_13epoch_only_state_dict-aa34a6d68.pth'
+  }
+
+
+models_urls_full = {
     'MVLMModel_DTU3D-RGB':
         'https://shapeml.compute.dtu.dk/Deep-MVLM/models/MVLMModel_DTU3D_RGB_07092019-c1cc3d59.pth',
     'MVLMModel_DTU3D-depth':
@@ -74,11 +99,23 @@ class DeepMVLM:
 
         checkpoint = load_url(check_point_name, model_dir, map_location=device)
 
-        state_dict = checkpoint['state_dict']
+        # Write clean model - should only be done once for translation of models
+        # base_name = os.path.basename(os.path.splitext(check_point_name)[0])
+        # clean_file = 'saved/trained/' + base_name + '_only_state_dict.pth'
+        # torch.save(checkpoint['state_dict'], clean_file)
+
+        state_dict = []
+        # Hack until all dicts are transformed
+        if check_point_name.find('only_state_dict') == -1:
+            state_dict = checkpoint['state_dict']
+        else:
+            state_dict = checkpoint
+
         if len(device_ids) > 1:
             model = torch.nn.DataParallel(model, device_ids=device_ids)
 
         model.load_state_dict(state_dict)
+
 
         model = model.to(device)
         model.eval()
