@@ -47,7 +47,7 @@ def process_files_in_dir(config, dir_name):
 
 def main(config):
     name = str(config.name)
-    if name.lower().endswith(('.obj', '.wrl', '.vtk', '.ply', '.stl')) and os.path.isfile(name):
+    if name.lower().endswith(('.obj', '.wrl', '.vtk', '.vtp', '.ply', '.stl')) and os.path.isfile(name):
         process_one_file(config, name)
     elif name.lower().endswith('.txt') and os.path.isfile(name):
         process_file_list(config, name)

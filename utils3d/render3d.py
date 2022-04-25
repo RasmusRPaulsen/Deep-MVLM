@@ -493,28 +493,28 @@ class Render3D:
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:3] = image_stack_rgb / 255
             image_stack[:, :, :, 3:4] = image_stack_full[:, :, :, 4:5] / 255
-        elif (file_type in [".vtk", ".stl", ".ply", ".wrl"]) and image_channels == "RGB":
+        elif (file_type in [".vtk", ".vtp", ".stl", ".ply", ".wrl"]) and image_channels == "RGB":
             transformation_stack = self.generate_3d_transformations()
             image_stack_full = self.render_3d_multi_rgb_geometry_depth(
                 transformation_stack, file_name)
             n_channels = 3
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:3] = image_stack_full[:, :, :, 0:3] / 255
-        elif (file_type in [".vtk", ".stl", ".ply", ".wrl", ".obj"]) and image_channels == "geometry":
+        elif (file_type in [".vtk", ".vtp", ".stl", ".ply", ".wrl", ".obj"]) and image_channels == "geometry":
             transformation_stack = self.generate_3d_transformations()
             image_stack_full = self.render_3d_multi_rgb_geometry_depth(
                 transformation_stack, file_name)
             n_channels = 1
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:1] = image_stack_full[:, :, :, 3:4] / 255
-        elif (file_type in [".vtk", ".stl", ".ply", ".wrl", ".obj"]) and image_channels == "depth":
+        elif (file_type in [".vtk", ".vtp", ".stl", ".ply", ".wrl", ".obj"]) and image_channels == "depth":
             transformation_stack = self.generate_3d_transformations()
             image_stack_full = self.render_3d_multi_rgb_geometry_depth(
                 transformation_stack, file_name)
             n_channels = 1
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:1] = image_stack_full[:, :, :, 4:5] / 255
-        elif (file_type in [".vtk", ".stl", ".ply", ".wrl"]) and image_channels == "RGB+depth":
+        elif (file_type in [".vtk", ".vtp", ".stl", ".ply", ".wrl"]) and image_channels == "RGB+depth":
             transformation_stack = self.generate_3d_transformations()
             image_stack_full = self.render_3d_multi_rgb_geometry_depth(
                 transformation_stack, file_name)
@@ -522,7 +522,7 @@ class Render3D:
             image_stack = np.zeros((n_views, win_size, win_size, n_channels), dtype=np.float32)
             image_stack[:, :, :, 0:3] = image_stack_full[:, :, :, 0:3] / 255
             image_stack[:, :, :, 3:4] = image_stack_full[:, :, :, 4:5] / 255
-        elif (file_type in [".vtk", ".stl", ".ply", ".wrl", ".obj"]) and image_channels == "geometry+depth":
+        elif (file_type in [".vtk", ".vtp", ".stl", ".ply", ".wrl", ".obj"]) and image_channels == "geometry+depth":
             transformation_stack = self.generate_3d_transformations()
             image_stack_full = self.render_3d_multi_rgb_geometry_depth(
                 transformation_stack, file_name)
@@ -640,7 +640,7 @@ class Render3D:
                 del props
                 file_read = True
 
-        if not file_read and file_type in [".vtk", ".stl", ".ply", ".wrl", ".obj"]:
+        if not file_read and file_type in [".vtk", ".stl", ".vtp", ".ply", ".wrl", ".obj"]:
             pd = Utils3D.multi_read_surface(mesh_name)
             if pd.GetNumberOfPoints() < 1:
                 print('Could not read', mesh_name)

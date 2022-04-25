@@ -333,6 +333,12 @@ class Utils3D:
             pd_in.Update()
             pd = pd_in.GetOutput()
             return pd
+        elif file_extension == ".vtp":
+            pd_in = vtk.vtkXMLPolyDataReader()
+            pd_in.SetFileName(file_name)
+            pd_in.Update()
+            pd = pd_in.GetOutput()
+            return pd
         elif file_extension == ".stl":
             pd_in = vtk.vtkSTLReader()
             pd_in.SetFileName(file_name)
@@ -564,7 +570,7 @@ class Utils3D:
         names = []
         for root, dirs, files in os.walk(directory):
             for filename in files:
-                if filename.lower().endswith(('.obj', '.wrl', '.vtk', '.ply', '.stl')):
+                if filename.lower().endswith(('.obj', '.wrl', '.vtk', '.vtp', '.ply', '.stl')):
                     full_name = os.path.join(root, filename)
                     if os.path.isfile(full_name) and os.stat(full_name).st_size > 5:
                         names.append(full_name)
