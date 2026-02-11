@@ -1,0 +1,478 @@
+{
+  "n_samples": 60,
+  "n_features": 31,
+  "outer_cv": {
+    "splits": 5,
+    "repeats": 20,
+    "total_folds": 100,
+    "seed": 42
+  },
+  "metrics_mean": {
+    "accuracy": 0.5608333333333334,
+    "balanced_accuracy": 0.5608333333333334,
+    "f1_macro": 0.5487003922003921,
+    "f1_weighted": 0.5487003922003921,
+    "mcc": 0.3563354269489812,
+    "roc_auc_ovr_macro": 0.7728125
+  },
+  "metrics_std": {
+    "accuracy": 0.13532625186727237,
+    "balanced_accuracy": 0.13532625186727237,
+    "f1_macro": 0.13775799364576682,
+    "f1_weighted": 0.13775799364576682,
+    "mcc": 0.21061650498315201
+  },
+  "confusion_matrix": [
+    [
+      191,
+      85,
+      124
+    ],
+    [
+      93,
+      282,
+      25
+    ],
+    [
+      137,
+      63,
+      200
+    ]
+  ],
+  "classification_report": "              precision    recall  f1-score   support\n\n           0     0.4537    0.4775    0.4653       400\n           1     0.6558    0.7050    0.6795       400\n           2     0.5731    0.5000    0.5340       400\n\n    accuracy                         0.5608      1200\n   macro avg     0.5609    0.5608    0.5596      1200\nweighted avg     0.5609    0.5608    0.5596      1200\n",
+  "best_params": [
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.25
+    },
+    {
+      "clf__C": 10.0,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.25
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 1.0,
+      "clf__l1_ratio": 0.75
+    },
+    {
+      "clf__C": 1.0,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.0
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.25
+    },
+    {
+      "clf__C": 1.0,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 1.0,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 0.75
+    },
+    {
+      "clf__C": 3.1622776601683795,
+      "clf__l1_ratio": 0.25
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 1.0,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 3.1622776601683795,
+      "clf__l1_ratio": 0.25
+    },
+    {
+      "clf__C": 1.0,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 31.622776601683793,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 10.0,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 1.0,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.25
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 0.75
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.25
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 0.25
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 0.01,
+      "clf__l1_ratio": 0.0
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 10.0,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 3.1622776601683795,
+      "clf__l1_ratio": 0.25
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 0.75
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.25
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 0.75
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.25
+    },
+    {
+      "clf__C": 10.0,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 0.75
+    },
+    {
+      "clf__C": 0.03162277660168379,
+      "clf__l1_ratio": 0.25
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 0.03162277660168379,
+      "clf__l1_ratio": 0.0
+    },
+    {
+      "clf__C": 1.0,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 0.03162277660168379,
+      "clf__l1_ratio": 0.0
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 3.1622776601683795,
+      "clf__l1_ratio": 0.0
+    },
+    {
+      "clf__C": 10.0,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 10.0,
+      "clf__l1_ratio": 0.75
+    },
+    {
+      "clf__C": 0.03162277660168379,
+      "clf__l1_ratio": 0.0
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.25
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.25
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 0.75
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.25
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 1.0,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 0.25
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 31.622776601683793,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 31.622776601683793,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 3.1622776601683795,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 0.75
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.25
+    },
+    {
+      "clf__C": 3.1622776601683795,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 0.25
+    },
+    {
+      "clf__C": 10.0,
+      "clf__l1_ratio": 0.25
+    },
+    {
+      "clf__C": 1.0,
+      "clf__l1_ratio": 0.75
+    },
+    {
+      "clf__C": 1.0,
+      "clf__l1_ratio": 0.75
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 10.0,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.0
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 0.75
+    },
+    {
+      "clf__C": 3.1622776601683795,
+      "clf__l1_ratio": 0.0
+    },
+    {
+      "clf__C": 3.1622776601683795,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 3.1622776601683795,
+      "clf__l1_ratio": 0.75
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.5
+    },
+    {
+      "clf__C": 1.0,
+      "clf__l1_ratio": 0.0
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 0.31622776601683794,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 1.0,
+      "clf__l1_ratio": 0.0
+    },
+    {
+      "clf__C": 10.0,
+      "clf__l1_ratio": 1.0
+    },
+    {
+      "clf__C": 0.1,
+      "clf__l1_ratio": 0.25
+    }
+  ],
+  "feature_columns": [
+    "width_biocular_ex",
+    "width_intercanthal_end",
+    "width_nasal_al",
+    "width_mouth_ch",
+    "width_bigonal_go",
+    "d_N_Sn",
+    "d_N_Me",
+    "d_Sn_Me",
+    "d_N_Prn",
+    "d_Sn_Prn",
+    "d_Sn_Pg",
+    "d_N_Pg",
+    "d_G_Sn",
+    "ratio_lower_face",
+    "ratio_nose_to_face",
+    "ratio_chin_to_face",
+    "ratio_mouth_to_nose_width",
+    "ratio_nasal_to_biocular",
+    "ang_convexity_G_Sn_Pg",
+    "ang_convexity_G_N_Pg",
+    "ang_profile_N_Sn_Pg",
+    "ang_nasolabial_Col_Sn_Ls",
+    "ang_mentolabial_Li_Phi_Pg",
+    "z_Pg_minus_Sn",
+    "z_Prn_minus_Sn",
+    "z_Ls_minus_Sn",
+    "z_Li_minus_Sn",
+    "z_G_minus_N",
+    "y_Sn_minus_N",
+    "y_Me_minus_Sn",
+    "gender"
+  ]
+}
