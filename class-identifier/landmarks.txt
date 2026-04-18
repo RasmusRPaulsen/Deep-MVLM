@@ -1,0 +1,23 @@
+0 Tr (Trichion) Alın orta hattında saçlı derinin başladığı en superior nokta.
+1 G (Glabella) Kaşlar arasında frontal kemiğin en çıkıntılı noktası.
+2 N (Nasion) Frontal ve nazal kemiklerin birleştiği orta hat noktası.
+3 Prn (Pronasale) Burun ucunun en anterior noktası.
+4 Col (Columella) Kolumellanın en inferior noktası.
+5 Sn (Subnasale) Nazal septum ile üst dudak birleşimindeki orta hat noktası.
+6 Phi (Philtrum) Filtrum oluğunun orta noktası.
+7 Ls (Labium Superius) Üst dudağın en anterior noktası.
+8 Stm (Stomion) Üst ve alt dudakların doğal temas noktasının orta hattı.
+9 Li (Labium Inferius) Alt dudağın en anterior noktası.
+10 Pg (Pogonion) Yumuşak doku çene ucunun en anterior noktası.
+11 Gn (Gnathion) Pogonion ve Menton arasındaki en anterior-inferior nokta.
+12 Me (Menton) Yumuşak doku çene ucunun en inferior noktası.
+13 Ex_R (Exocanthion Right) Sağ gözün dış kantusunun en lateral noktası.
+14 End_R (Endocanthion Right) Sağ gözün iç kantusunun en medial noktası.
+15 End_L (Endocanthion Left) Sol gözün iç kantusunun en medial noktası.
+16 Ex_L (Exocanthion Left) Sol gözün dış kantusunun en lateral noktası.
+17 Al_R (Alare Right) Sağ burun kanadının en lateral noktası.
+18 Al_L (Alare Left) Sol burun kanadının en lateral noktası.
+19 Ch_R (Chelion Right) Sağ ağız köşesinin en lateral noktası.
+20 Ch_L (Chelion Left) Sol ağız köşesinin en lateral noktası.
+21 Go_R (Gonion Right) Sağ mandibular açının yumuşak doku üzerindeki projeksiyonu.
+22 Go_L (Gonion Left) Sol mandibular açının yumuşak doku üzerindeki projeksiyonu.

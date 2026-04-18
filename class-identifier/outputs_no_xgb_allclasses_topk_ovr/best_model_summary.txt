@@ -1,0 +1,9 @@
+Best model by macro-F1: LogisticRegression
+Accuracy: 0.8206
+F1-macro: 0.8206
+Best params:
+{
+  "model__clf__solver": "saga",
+  "model__clf__class_weight": null,
+  "model__clf__C": 1.0
+}

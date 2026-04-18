@@ -1,0 +1,16 @@
+Top-feature category counts:
+- distance: 3
+- ratio: 1
+- angle: 3
+- symmetry: 0
+- midpoint: 1
+- coordinate: 5
+- gender: 0
+- other: 7
+
+Clinical interpretation guide:
+- Distance-heavy importance suggests global craniofacial size/proportion differences.
+- Symmetry-heavy importance suggests left-right asymmetry contributes to class separation.
+- Ratio/angle importance suggests shape configuration is more discriminative than absolute size.
+- Midpoint features indicate bilateral relational geometry around facial midline.
+- Gender importance, if present, may reflect sex-related dimorphism and should be interpreted cautiously.

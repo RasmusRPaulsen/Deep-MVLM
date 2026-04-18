@@ -1,0 +1,11 @@
+Dataset Overview
+----------------
+Samples: 301
+Landmarks per sample: 23
+Coordinate dims: 3
+Engineered feature count: 640
+Class distribution (0,1,2): {0: 100, 1: 100, 2: 101}
+Gender distribution (0=F,1=M): {0: 151, 1: 150}
+Normalization: center at Nasion (idx=2), scale by interocular distance End_L-End_R (idx=15-14)
+Top-k feature selection in CV folds: 300
+Top-k scoring method: f_classif
